@@ -1,11 +1,13 @@
 CXX=g++
-CXXFLAGS=-std=c++11 -O2 #-Wall
+CXXFLAGS=-std=c++11 -O0 -ggdb -Wall
+GDB=gdb
 LDFLAGS=
 LIBRARIES=
 SOURCES= \
- main.cpp
+ main.cpp \
+ logger.cpp
 OBJECTS=$(SOURCES: .cpp=.o)
-EXECUTABLE=ethirc
+EXECUTABLE=hebi
 
 all: $(EXECUTABLE)
 
@@ -18,7 +20,10 @@ $(EXECUTABLE): $(OBJECTS)
 clean:
 		$(RM) $(EXECUTABLE) *.o
 
+dbg: $(EXECUTABLE)
+		$(GDB) $(EXECUTABLE)
+
 rmr:
 		$(RM) $(EXECUTABLE) *.o
 		$(MAKE) all
-		./$(EXECUTABLE) irc.freenode.net 6667
+		./$(EXECUTABLE) irc.freenode.net 6667 || true
