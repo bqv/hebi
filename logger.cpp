@@ -2,73 +2,82 @@
 
 namespace log
 {
-    Log fatal = Log(std::cerr, 00, "FATAL");
-    Log error = Log(std::cerr, 10, "ERROR");
-    Log warn  = Log(std::cerr, 20, "WARN");
-    Log info  = Log(std::cout, 30, "INFO");
-    Log debug = Log(std::cerr, 40, "DEBUG");
+    logger fatal = logger(std::cerr, 00, "FATAL");
+    logger error = logger(std::cerr, 10, "ERROR");
+    logger warn  = logger(std::cerr, 20, "WARN");
+    logger info  = logger(std::cout, 30, "INFO");
+    logger debug = logger(std::cerr, 40, "DEBUG");
 
-    std::vector<std::ostream*> Logger::os;
-    std::mutex Logger::mutex;
+    std::vector<std::ostream*> log_line::streams;
+    std::mutex log_line::mutex;
 
-    Logger::Logger(std::ostream& console)
-        : console(console)
+    log_line::log_line(std::ostream& pConsole)
+        : mConsole(pConsole)
     {
     }
 
-    Logger::~Logger()
+    log_line::~log_line()
     {
     }
 
-    void Logger::tee(std::vector<std::ostream*> targets)
+    void log_line::register_stream(std::ostream* pTarget)
     {
-        for (auto os : targets)
-            Logger::os.push_back(os);
+        log_line::streams.push_back(pTarget);
     }
 
-    Log::Log(std::ostream& console, short int num, const char* str)
-        : Logger(console)
-        , str(str)
-        , num(num)
+    void log_line::register_streams(std::vector<std::ostream*> pTargets)
+    {
+        for (auto target : pTargets)
+        {
+            log_line::streams.push_back(target);
+        }
+    }
+
+    logger::logger(std::ostream& pConsole, short int pStatusCode, const char* pLevelName)
+        : log_line(pConsole)
+        , mLevelName(pLevelName)
+        , mStatusCode(pStatusCode)
     {
     }
 
-    Log::~Log()
+    logger::~logger()
     {
     }
 
-    Logger& operator<< (Logger& log, Logger& (&f)(Logger&))
+    log_line& operator<< (log_line& pLogLine, log_line& (&pf)(log_line&))
     {
-        return f(log);
+        pf(pLogLine);
+        return pLogLine;
     }
 
-    Logger& operator<< (Logger& log, std::ostream& (&f)(std::ostream&))
+    log_line& operator<< (log_line& pLogLine, std::ostream& (&pf)(std::ostream&))
     {
-        log.console << f;
-        for (std::ostream* out : log.os)
-            *out << f;
-        return log;
+        pLogLine.mConsole << pf;
+        for (std::ostream* target : pLogLine.streams)
+            *target << pf;
+        return pLogLine;
     }
 
-    Logger& operator<< (Log& loglvl, Logger& (&f)(Logger&))
+    log_line& operator<< (logger& pLogger, log_line& (&pf)(log_line&))
     {
-        Log::mutex.lock();
+        logger::mutex.lock();
 
-        Logger log = loglvl;
+        log_line logLine = pLogger;
 
-        log << f;
-        return loglvl;
+        logLine << pf;
+        return pLogger;
     }
 
-    Logger& done(Logger& log)
+    log_line& done(log_line& pLogLine)
     {
-        endl(log);
-        Logger::mutex.unlock();
-        return log;
+        endl(pLogLine);
+        log_line::mutex.unlock();
+        return pLogLine;
     }
 
-    Logger& endl(Logger& log)
+    log_line& endl(log_line& pLogLine)
     {
-        return log << std::endl;
+        pLogLine << std::endl;
+        return pLogLine;
     }
 };

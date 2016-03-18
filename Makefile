@@ -1,5 +1,5 @@
-CXX=g++
-CXXFLAGS=-std=c++11 -O0 -ggdb -Wall
+CXX=clang++
+CXXFLAGS=-std=c++11 -O2 -ggdb -Wall
 GDB=gdb
 LDFLAGS=
 LIBRARIES=

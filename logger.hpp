@@ -2,55 +2,55 @@
 #define _LOGGER_HPP_
 
 #include <iostream>
-#include <memory>
-#include <vector>
 #include <mutex>
+#include <vector>
 
 namespace log
 {
-    class Logger
+    class log_line
     {
       protected:
-        Logger(std::ostream& console);
+        log_line(std::ostream& pConsole);
 
-        static std::vector<std::ostream*> os;
+        static std::vector<std::ostream*> streams;
         static std::mutex mutex;
-        std::ostream& console;
+        std::ostream& mConsole;
 
       public:
-        virtual ~Logger();
+        virtual ~log_line();
         
-        static void tee(const std::vector<std::ostream*> targets);
+        static void register_stream(std::ostream* pTarget);
+        static void register_streams(std::vector<std::ostream*> pTargets);
 
         template <typename T>
-        friend Logger& operator<< (Logger& log, T val);
-        friend Logger& operator<< (Logger& log, Logger& (&f)(Logger&));
-        friend Logger& operator<< (Logger& log, std::ostream& (&f)(std::ostream&));
+        friend log_line& operator<< (log_line& pLogLine, T pValue);
+        friend log_line& operator<< (log_line& pLogLine, log_line& (&pf)(log_line&));
+        friend log_line& operator<< (log_line& pLogLine, std::ostream& (&pf)(std::ostream&));
 
-        friend Logger& done(Logger& log);
-        friend Logger& endl(Logger& log);
+        friend log_line& done(log_line& pLogLine);
+        friend log_line& endl(log_line& pLogLine);
     };
 
-    class Log : public Logger
+    class logger : public log_line
     {
       protected:
-        char const* str;
-        short int num;
+        char const* mLevelName;
+        short int mStatusCode;
 
       public:
-        Log(std::ostream& console, short int num, const char* str);
-        virtual ~Log();
+        logger(std::ostream& pConsole, short int pStatusCode, const char* pLevelName);
+        virtual ~logger();
 
         template <typename T>
-        friend Logger& operator<< (Log& log, T val);
-        friend Logger& operator<< (Log& log, Logger& (&f)(Logger&));
-        friend Logger& operator<< (Log& log, std::ostream& (&f)(std::ostream&));
+        friend log_line& operator<< (logger& pLogger, T pValue);
+        friend log_line& operator<< (logger& pLogger, log_line& (&pf)(log_line&));
+        friend log_line& operator<< (logger& pLogger, std::ostream& (&pf)(std::ostream&));
     };
 
-    extern Logger& done(Logger& log);
-    extern Logger& endl(Logger& log);
+    extern log_line& done(log_line& pLogLine);
+    extern log_line& endl(log_line& pLogLine);
 
-    extern Log fatal, error, warn, info, debug;
+    extern logger fatal, error, warn, info, debug;
 };
 
 #include "logger.ipp"

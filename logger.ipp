@@ -1,24 +1,26 @@
 namespace log
 {
     template <typename T>
-    Logger& operator<< (Logger& log, T val)
+    log_line& operator<< (log_line& pLogLine, T pValue)
     {
-        log.console << val;
-        for (std::ostream* out : log.os)
-            *out << val;
-        return log;
+        pLogLine.mConsole << pValue;
+        for (std::ostream* target : pLogLine.streams)
+        {
+            *target << pValue;
+        }
+        return pLogLine;
     }
 
     template <typename T>
-    Logger& operator<< (Log& loglvl, T val)
+    log_line& operator<< (logger& pLogger, T pValue)
     {
-        Log::mutex.lock();
+        logger::mutex.lock();
 
-        Logger log = loglvl;
+        log_line logLine = pLogger;
 
         // Todo: timestamp
-        log << '+' << loglvl.num << ' ' << loglvl.str << ' ';
-        log << val;
-        return loglvl;
+        logLine << '+' << pLogger.mStatusCode << ' ' << pLogger.mLevelName << ' ';
+        logLine << pValue;
+        return pLogger;
     }
 };
