@@ -3,7 +3,23 @@
 
 #include <iostream>
 #include <mutex>
+#include <string>
 #include <vector>
+
+#include "config.hpp"
+
+#define QUOTE(x) #x
+#define STR(x) QUOTE(x)
+#define LOC() "[" __FILE__ ":" STR(__LINE__) "] "
+
+#define TODO throw std::runtime_error(LOC() "Not Implemented")
+
+#ifdef DEBUG
+  #define DEBUG_STREAM std::cerr
+#else
+  // I'm sorry
+  #define DEBUG_STREAM *(new std::ostream(new NullBuffer()))
+#endif
 
 namespace log
 {
@@ -17,8 +33,6 @@ namespace log
         std::ostream& mConsole;
 
       public:
-        virtual ~log_line();
-        
         static void register_stream(std::ostream* pTarget);
         static void register_streams(std::vector<std::ostream*> pTargets);
 
@@ -35,16 +49,24 @@ namespace log
     {
       protected:
         char const* mLevelName;
-        short int mStatusCode;
+        unsigned char mStatusCode;
 
       public:
-        logger(std::ostream& pConsole, short int pStatusCode, const char* pLevelName);
-        virtual ~logger();
+        logger(std::ostream& pConsole, unsigned char pStatusCode, const char* pLevelName);
 
         template <typename T>
         friend log_line& operator<< (logger& pLogger, T pValue);
         friend log_line& operator<< (logger& pLogger, log_line& (&pf)(log_line&));
         friend log_line& operator<< (logger& pLogger, std::ostream& (&pf)(std::ostream&));
+    };
+
+    class NullBuffer : public std::streambuf
+    {
+      public:
+        int overflow(int c)
+        {
+            return c;
+        }
     };
 
     extern log_line& done(log_line& pLogLine);

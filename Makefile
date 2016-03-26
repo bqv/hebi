@@ -1,11 +1,13 @@
 CXX=clang++
-CXXFLAGS=-std=c++11 -O2 -ggdb -Wall
+CXXFLAGS=-std=c++1y -O2 -ggdb -Wall -Wextra
 GDB=gdb
 LDFLAGS=
 LIBRARIES=
 SOURCES= \
  main.cpp \
- logger.cpp
+ logger.cpp \
+ irc/socket.cpp \
+ irc/connection.cpp
 OBJECTS=$(SOURCES: .cpp=.o)
 EXECUTABLE=hebi
 
@@ -26,4 +28,4 @@ dbg: $(EXECUTABLE)
 rmr:
 		$(RM) $(EXECUTABLE) *.o
 		$(MAKE) all
-		./$(EXECUTABLE) irc.freenode.net 6667 || true
+		./$(EXECUTABLE) irc.subluminal.net 6667 || true

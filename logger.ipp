@@ -4,9 +4,9 @@ namespace log
     log_line& operator<< (log_line& pLogLine, T pValue)
     {
         pLogLine.mConsole << pValue;
-        for (std::ostream* target : pLogLine.streams)
+        for (std::ostream* streamPtr : pLogLine.streams)
         {
-            *target << pValue;
+            *streamPtr << pValue;
         }
         return pLogLine;
     }
@@ -19,7 +19,7 @@ namespace log
         log_line logLine = pLogger;
 
         // Todo: timestamp
-        logLine << '+' << pLogger.mStatusCode << ' ' << pLogger.mLevelName << ' ';
+        logLine << '+' << +pLogger.mStatusCode << ' ' << pLogger.mLevelName << ' ';
         logLine << pValue;
         return pLogger;
     }

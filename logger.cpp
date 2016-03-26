@@ -2,21 +2,17 @@
 
 namespace log
 {
-    logger fatal = logger(std::cerr, 00, "FATAL");
-    logger error = logger(std::cerr, 10, "ERROR");
-    logger warn  = logger(std::cerr, 20, "WARN");
-    logger info  = logger(std::cout, 30, "INFO");
-    logger debug = logger(std::cerr, 40, "DEBUG");
+    logger fatal = logger(std::cerr,    00, "FATAL");
+    logger error = logger(std::cerr,    10, "ERROR");
+    logger warn  = logger(std::cerr,    20, "WARN");
+    logger info  = logger(std::cout,    30, "INFO");
+    logger debug = logger(DEBUG_STREAM, 40, "DEBUG");
 
     std::vector<std::ostream*> log_line::streams;
     std::mutex log_line::mutex;
 
     log_line::log_line(std::ostream& pConsole)
         : mConsole(pConsole)
-    {
-    }
-
-    log_line::~log_line()
     {
     }
 
@@ -33,14 +29,10 @@ namespace log
         }
     }
 
-    logger::logger(std::ostream& pConsole, short int pStatusCode, const char* pLevelName)
+    logger::logger(std::ostream& pConsole, unsigned char pStatusCode, const char* pLevelName)
         : log_line(pConsole)
         , mLevelName(pLevelName)
         , mStatusCode(pStatusCode)
-    {
-    }
-
-    logger::~logger()
     {
     }
 
@@ -53,8 +45,8 @@ namespace log
     log_line& operator<< (log_line& pLogLine, std::ostream& (&pf)(std::ostream&))
     {
         pLogLine.mConsole << pf;
-        for (std::ostream* target : pLogLine.streams)
-            *target << pf;
+        for (std::ostream* streamPtr : pLogLine.streams)
+            *streamPtr << pf;
         return pLogLine;
     }
 

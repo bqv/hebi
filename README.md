@@ -1,2 +1,2 @@
-# ethIRC
-Ethernet over IRC
+# Hebi
+A node for the Hydra Decentralised IRC Bot
