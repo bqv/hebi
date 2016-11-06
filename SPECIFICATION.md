@@ -19,7 +19,7 @@
 2. Nodes may connect to more than one node in the network
 2. Nodes shall be identified by a 32-bit ID (re-)generated on every connect attempt
 2. Nodes may also keep a friendly name (*tag*)
-2. Nodes must keep a record of all other nodes in the network, and the fastest route to them
+2. Nodes must keep a record of all other nodes in the network, and the closest neighbour to them
 
 #### Hydra Protocol Messages
 3. `PING val id`
