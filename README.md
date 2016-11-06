@@ -22,16 +22,16 @@
 2. Nodes must keep a record of all other nodes in the network, and the fastest route to them
 
 #### Hydra Protocol Messages
-3. PING val id
+3. `PING val id`
   * Heartbeat broadcast by the leader. All nodes must relay this message, and should reply to it
-  * val (string): Identifier for uniqueness. Nodes must not relay the same ping twice
-  * id (byte[4]): NodeID of the Leader node, not modified when relayed by other nodes
-3. PONG val id count [tag]
+  * `val` (string): Identifier for uniqueness. Nodes must not relay the same ping twice
+  * `id` (byte[4]): NodeID of the Leader node, not modified when relayed by other nodes
+3. `PONG val id count [tag]`
   * Heartbeat reply broadcast from nodes. All nodes must relay these messages
-  * val (string): Identifier for identification
-  * id (byte[4]): NodeID of the origin node, not modified when relayed by other nodes
-  * count (int): Hop counter. Initialized to 0, incremented by each relay
-  * tag (string): Optional, friendly name for the origin node
+  * `val` (string): Identifier for identification
+  * `id` (byte[4]): NodeID of the origin node, not modified when relayed by other nodes
+  * `count` (int): Hop counter. Initialized to 0, incremented by each relay
+  * `tag` (string): Optional, friendly name for the origin node
 
 #### Annex A - Example Data Protocols
 * TCP data over agreed port
