@@ -24,8 +24,7 @@
 2. Nodes must reject termtime messages from any unregistered node
 
 ### Hydra Protocol Messages
-NB: Nodes must relay all messages if previously unseen
-
+###### NB: Nodes must relay all messages if previously unseen
 #### Term (Gossip)
 *A leader has been established, the network is in-term. Nodes should be transmitting data and keepalives*
 
