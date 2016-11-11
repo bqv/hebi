@@ -24,12 +24,14 @@
 2. Nodes must reject termtime messages from any unregistered node
 
 ### Hydra Protocol Messages
+NB: Nodes must relay all messages if previously unseen
+
 #### Term (Gossip)
 *A leader has been established, the network is in-term. Nodes should be transmitting data and keepalives*
 
 3. `PING term val id`
   * Heartbeat broadcast by the leader only. Any other sender must be ignored.
-  * Cohort: All nodes must relay this message, and should reply to it. Higher term takes priority.
+  * Cohort: All nodes should reply to it. Higher term takes priority.
   * Leader: If this message is received from another id with same term, trigger an election.
   * `term` (`int`): Index of the current term. If this is greater than expected, update leader.
   * `val` (`string`): Identifier for uniqueness. Nodes must not relay the same ping twice
@@ -49,14 +51,14 @@
   * `idx` (`int`): Monotonically increasing counter for record, initialised to 0 each term
   * `line` (`string`): Unaltered full IRC message of types minimally enumerated by E_RECV
 3. `SEND term id line`
-  * Data to leader from a node.
+  * Data message to leader from a node.
   * Cohort: Ignore.
   * Leader: Forward to IRC.
   * `id` (`byte[4]`): NodeID of the origin node, not modified when relayed by other nodes
   * `line` (`string`): Full IRC message of types minimally enumerated by E_SEND
 3. `DROP id [reason]`
-  * Remove a node from the network.
-  * All nodes must relay this message once and comply instantly.
+  * Broadcast to remove a node from the network.
+  * All: Comply instantly.
   * `id` (`byte[4]`): NodeID of the node to be removed.
   * `reason` (`string`): Optional, reason for removal
 
