@@ -82,7 +82,7 @@
   * Induction response broadcast. All nodes must relay once, forwarded to server if success
   * `id` (`byte[4]`): Proposed NodeID. Shun if conflicting or already inducting someone
 5. `HELLO id [tag]`
-  * Attempt to commit induction from incoming node
+  * Attempt to commit induction from incoming node if no node shuns
   * `id` (`byte[4]`): Accepted NodeID. Must be ignored unless `id` has knocked
 5. `WELCOME id`
   * Commit induction sent to new node
