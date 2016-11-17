@@ -43,13 +43,13 @@
   * `id` (`byte[4]`): NodeID of the origin node, not modified when relayed by other nodes
   * `count` (`int`): Hop counter. Initialized to 0, incremented by each relay
   * `tag` (`string`): Optional, friendly name for the origin node
-3. `RECV term idx line`
+3. `RECV idx line`
   * Data broadcast by the leader.
   * Cohort: All nodes must relay this message once.
   * Leader: Ignore.
   * `idx` (`int`): Monotonically increasing counter for record, initialised to 0 each term
   * `line` (`string`): Unaltered full IRC message of types minimally enumerated by E_RECV
-3. `SEND term id line`
+3. `SEND id line`
   * Data message to leader from a node.
   * Cohort: Ignore.
   * Leader: Forward to IRC.
@@ -65,13 +65,31 @@
 *A leader needs to be established, election messages ___only___*
 
 4. `NOMINATE term id`
-  * Nominate node `id` for election.
-  * All nodes must pledge to vote for the first nomination they see.
+  * Nominate node `id` (self) for election.
   * Cohort: Receiving this message in termtime signifies start of an election.
-  * Leader: Receiving this message terminates the term. Vote.
-4. `PLEDGE term id`
-4. `CALL`
-4. `ELECT`
+  * Leader: Receiving this message terminates the term. Drop leader status, vote.
+  * Nominee: Take nominee status. Ignore any other nominations.
+  * `term` (`int`): Index of the term in election. Ignore if less than expected.
+  * `id` (`byte[4]`): Nominee's nodeID
+4. `PLEDGE term nom id`
+  * Pledge to vote for node `id` in election `term`.
+  * Cohort: All nodes must pledge to vote for the first nomination they see.
+  * Nominee: On recieving a quorum of pledges within MAX_VOTE, call the election.
+  * `term` (`int`): Index of the term in election. Ignore if less than expected.
+  * `nom` (`byte[4]`): Nominee's nodeID
+  * `id` (`byte[4]`): Sender's nodeID
+4. `CALL term`
+  * Fetch votes for election `term`.
+  * Cohort: Relay if not seen. Respond with pledged vote.
+  * Nominee: Reset timer, expect quorum of votes within MAX_VOTE.
+  * `term` (`int`): Index of the term in election. Ignore if less than expected or no pledges.
+4. `ELECT term nom id`
+  * Vote in election `term`.
+  * Cohort: All nodes must relay this message once.
+  * Nominee: Take leader status upon quorum of votes within MAX_VOTE. Begin term with PING.
+  * `term` (`int`): Index of the term in election. Ignore if less than expected.
+  * `nom` (`byte[4]`): Nominee's nodeID
+  * `id` (`byte[4]`): Sender's nodeID
 
 #### Induction (2PC)
 *A server has requested to be a node, collectively decide whether to induct, if in-term*
@@ -95,6 +113,7 @@
   * Induction confirmation from incoming node
   * Cohort: Register node and relay if not already seen.
   * `id` (`byte[4]`): Accepted NodeID. Must be ignored unless `id` has knocked
+  * `tag` (`string`): Optional, friendly name for the origin node
 
 ### Annex A - Definitions
 E_RECV :
@@ -107,7 +126,7 @@ MAX_PING :
   `10` seconds
   
 MAX_VOTE :
-  `10` seconds
+  Vary between `5`-`15` seconds
   
 MAX_MEET :
   `10` seconds
