@@ -81,8 +81,15 @@ namespace irc
 
         if (!mConnected) return;
 
-        while (ssize_t diff = len - ::send(mSockfd, line.c_str(), len, false))
+        while (ssize_t ret = ::send(mSockfd, line.c_str(), len, false))
         {
+            if (ret < 0)
+            {
+                mConnected = false;
+                return;
+            }
+
+            ssize_t diff = len - ret;
             line = line.substr(diff, std::string::npos);
             len = line.size();
         }
