@@ -4,6 +4,7 @@
 #include <queue>
 #include <string>
 #include <vector>
+#include <thread>
 
 #include "../config.hpp"
 #include "../logger.hpp"
@@ -14,11 +15,13 @@ namespace irc
     class connection
     {
       private:
+        void run();
         bool user(std::string pUser, std::string pHost, std::string pServer, std::string pRealName);
         bool quit(std::string pMsg);
         void do_register(std::string pNick);
 
         std::mutex mLock;
+        std::thread mThread;
         std::queue<std::string> mQueue;
         socket mSock;
 
@@ -26,7 +29,7 @@ namespace irc
         connection(const std::string pHost, unsigned short pPort);
         ~connection();
 
-        void run();
+        void start();
         std::string get();
 
         bool nick(std::string pNick);

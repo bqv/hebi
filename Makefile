@@ -1,7 +1,7 @@
 CXX=clang++
-CXXFLAGS=-std=c++1y -O2 -ggdb -Wall -Wextra
+CXXFLAGS=-std=c++1y -ggdb -Wall -Wextra -Wpedantic -Werror #-O2
 GDB=gdb
-LDFLAGS=
+LDFLAGS=-lpthread
 LIBRARIES=
 SOURCES= \
  main.cpp \

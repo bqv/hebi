@@ -17,15 +17,19 @@ int main(int argc, char *argv[])
 {
     std::vector<std::string> args(argv + 1, argv + argc);
 	log::info << "Starting Hebi" << log::done;
-	auto logentry = log::debug << "Args: ";
+	auto logentry = log::debug << "Args:";
     for (std::string arg : args)
     {
-        logentry << arg;
+        logentry << " " << arg;
     }
     logentry << log::done;
     log::info << log::done;
 
     irc::connection* connPtr = new irc::connection(args[0], stoi(args[1]));
+
+    connPtr->start();
+    /* do stuff */
+
     delete connPtr;
 	return EXIT_SUCCESS;
 }

@@ -6,8 +6,6 @@ namespace irc
         : mHost(pHost)
         , mPort(pPort)
     {
-        assert(pPort > 0);
-
         struct addrinfo hints, *ai;
         char ip[INET6_ADDRSTRLEN];
 

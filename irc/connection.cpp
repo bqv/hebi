@@ -1,6 +1,5 @@
 #include "connection.hpp"
 #include <chrono>
-#include <thread>
 
 namespace irc
 {
@@ -15,18 +14,26 @@ namespace irc
         this->quit("Connection closing...");
     }
 
+    void connection::start()
+    {
+        mThread = std::thread(&connection::run, this);
+        mThread.detach();
+    }
+
     void connection::run()
     {
         this->do_register(NICK);
         this->join("#programming");
 
-        while (std::vector<std::string> lines = mSock.recv())
+        std::vector<std::string> lines = mSock.recv();
+        while (lines.size() > 0)
         {
             std::lock_guard<std::mutex> guard(mLock);
             for (std::string line : lines)
             {
                 mQueue.push(line);
             }
+            lines = mSock.recv();
         }
     }
 
