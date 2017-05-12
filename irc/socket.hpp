@@ -30,6 +30,7 @@ namespace irc
         std::ostringstream mOutBuf;
         char mInBuf[IRC_MAXLINE];
         std::recursive_mutex mLock;
+        bool mConnected;
 
       public:
         socket(const char* pHost, unsigned short pPort);
@@ -39,8 +40,7 @@ namespace irc
         void send(const char *pFmt, T pValue, Types... pRest);
         void send(const char *pFmt);
         std::vector<std::string> recv();
-
-        bool connected;
+        bool connected();
     };
 }
 

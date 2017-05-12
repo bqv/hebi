@@ -10,6 +10,7 @@ namespace irc
         char ip[INET6_ADDRSTRLEN];
 
         std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
+        mConnected = false;
 
         auto logentry = log::debug << LOC() << "Using host " << mHost << " with port " << mPort;
         logentry << " on " << (V4_ONLY ? "IPv4" : "IPv6") << log::done;
@@ -65,6 +66,7 @@ namespace irc
         else
         {
             log::info << "Connected to IRC!" << log::done;
+            mConnected = true;
         }
     }
 
@@ -75,9 +77,11 @@ namespace irc
         log::info << "-<- " << mOutBuf.str() << log::done;
         mOutBuf << "\r\n";
         std::string line = mOutBuf.str();
-        size_t len = line.size();
+        ssize_t len = line.size();
 
-        while (size_t diff = len - ::send(mSockfd, line.c_str(), len, false))
+        if (!mConnected) return;
+
+        while (ssize_t diff = len - ::send(mSockfd, line.c_str(), len, false))
         {
             line = line.substr(diff, std::string::npos);
             len = line.size();
@@ -92,9 +96,14 @@ namespace irc
         std::vector<std::string> lines;
 
         char data[IRC_MAXBUF] = {0};
-        size_t carry = strlen(mInBuf);
+        ssize_t carry = strlen(mInBuf);
         strcpy(data, mInBuf);
-        size_t len = ::recv(mSockfd, data+carry, IRC_MAXBUF-carry-1, false);
+        ssize_t len = ::recv(mSockfd, data+carry, IRC_MAXBUF-carry-1, false);
+        if (len <= 0)
+        {
+            mConnected = false;
+            return lines;
+        }
         data[len] = '\0';
         
         for (const char *start = data;;)
@@ -113,6 +122,12 @@ namespace irc
             }
         }
         return lines;
+    }
+
+    bool socket::connected()
+    {
+        std::lock_guard<std::recursive_mutex> guard(mLock);
+        return mConnected;
     }
 
     socket::~socket()

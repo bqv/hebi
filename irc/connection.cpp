@@ -39,6 +39,7 @@ namespace irc
 
     void connection::do_register(std::string pNick)
 	{
+        std::vector<std::string> lines = mSock.recv();
         this->user("Hydra", "*", "*", "Hydra decentralised IRC bot");
         this->nick(pNick);
 	}
