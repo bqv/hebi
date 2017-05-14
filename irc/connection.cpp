@@ -18,15 +18,16 @@ namespace irc
     {
         mThread = std::thread(&connection::run, this);
         mThread.detach();
+        mRunning = true;
     }
 
     void connection::run()
     {
         this->do_register(NICK);
-        this->join("#programming");
+        this->join("##doge");
 
         std::vector<std::string> lines = mSock.recv();
-        while (lines.size() > 0)
+        while (mSock.connected())
         {
             std::lock_guard<std::mutex> guard(mLock);
             for (std::string line : lines)
@@ -35,11 +36,16 @@ namespace irc
             }
             lines = mSock.recv();
         }
+        mRunning = false;
+    }
+
+    bool connection::running()
+    {
+        return mRunning;
     }
 
     void connection::do_register(std::string pNick)
 	{
-        std::vector<std::string> lines = mSock.recv();
         this->user("Hydra", "*", "*", "Hydra decentralised IRC bot");
         this->nick(pNick);
 	}

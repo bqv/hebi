@@ -13,6 +13,21 @@
 #include <iostream>
 #include <thread>
 
+void work(irc::connection& conn)
+{
+    conn.start();
+    while (conn.running())
+    {
+        log::debug << "Main Thread!" << log::done;
+        std::this_thread::sleep_for(std::chrono::milliseconds(60000));
+    }
+}
+
+void usage(char *binary)
+{
+    std::cout << "Usage: " << binary << " <host> <port>" << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
     std::vector<std::string> args(argv + 1, argv + argc);
@@ -25,11 +40,40 @@ int main(int argc, char *argv[])
     logentry << log::done;
     log::info << log::done;
 
-    irc::connection* connPtr = new irc::connection(args[0], stoi(args[1]));
+    if (args.size() < 1)
+    {
+        usage(argv[0]);
+    }
+    else
+    {
+        std::string &host = args[0];
+        int port = 6667;
+        if (args.size() < 2)
+        {
+            log::warn << "No port specified, defaulting to 6667" << log::done;
+        }
+        else
+        {
+            try 
+            {
+                port = stoi(args[1]);
+            }
+            catch (const std::invalid_argument&)
+            {
+                log::fatal << "Port must be a number" << log::done;
+                return EXIT_FAILURE;
+            }
+            if (port > 65535 || port < 1)
+            {
+                log::fatal << "Port must be between 1-65535" << log::done;
+                return EXIT_FAILURE;
+            }
+        }
+        irc::connection* connPtr = new irc::connection(host, port);
 
-    connPtr->start();
-    /* do stuff */
+        work(*connPtr);
 
-    delete connPtr;
+        delete connPtr;
+    }
 	return EXIT_SUCCESS;
 }

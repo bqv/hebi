@@ -24,6 +24,7 @@ namespace irc
         std::thread mThread;
         std::queue<std::string> mQueue;
         socket mSock;
+        bool mRunning;
 
       public:
         connection(const std::string pHost, unsigned short pPort);
@@ -31,6 +32,7 @@ namespace irc
 
         void start();
         std::string get();
+        bool running();
 
         bool nick(std::string pNick);
         bool join(std::vector<std::string> pChans);

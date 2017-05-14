@@ -81,15 +81,15 @@ namespace irc
 
         if (!mConnected) return;
 
-        while (ssize_t ret = ::send(mSockfd, line.c_str(), len, false))
+        while (ssize_t diff = len - ::send(mSockfd, line.c_str(), len, false))
         {
-            if (ret < 0)
+            if (len - diff < 0)
             {
+                log::warn << "IRC Disconnected" << log::done;
                 mConnected = false;
                 return;
             }
 
-            ssize_t diff = len - ret;
             line = line.substr(diff, std::string::npos);
             len = line.size();
         }
@@ -105,22 +105,25 @@ namespace irc
         char data[IRC_MAXBUF] = {0};
         ssize_t carry = strlen(mInBuf);
         strcpy(data, mInBuf);
+        memset(mInBuf, 0, IRC_MAXLINE);
         ssize_t len = ::recv(mSockfd, data+carry, IRC_MAXBUF-carry-1, false);
         if (len <= 0)
         {
+            log::warn << "IRC Disconnected" << log::done;
             mConnected = false;
             return lines;
         }
-        data[len] = '\0';
+        data[carry+len] = '\0';
         
-        for (const char *start = data;;)
+        for (const char *start = data; start < data+IRC_MAXBUF-1;)
         {
-            if (const char *end = strchr(start, '\n'))
+            const char *end = strchr(start, '\r');
+            if (end && end[1] == '\n')
             {
-                std::string line(start, end-start-1);
+                std::string line(start, end-start);
                 log::info << "->- " << line << log::done;
                 lines.push_back(line);
-                start = end+1;
+                start = end+2;
             }
             else
             {
