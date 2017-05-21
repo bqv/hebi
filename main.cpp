@@ -13,19 +13,20 @@
 #include <iostream>
 #include <thread>
 
-void work(irc::connection& conn)
+void work(irc::connection& pConn)
 {
-    conn.start();
-    while (conn.running())
+    pConn.start();
+    while (pConn.running())
     {
-        log::debug << "Main Thread!" << log::done;
         std::this_thread::sleep_for(std::chrono::milliseconds(60000));
+        log::debug << "Main Thread!" << log::done;
+        //pConn.stop();
     }
 }
 
-void usage(char *binary)
+void usage(char *pBinary)
 {
-    std::cout << "Usage: " << binary << " <host> <port>" << std::endl;
+    std::cout << "Usage: " << pBinary << " <host> <port>" << std::endl;
 }
 
 int main(int argc, char *argv[])

@@ -6,8 +6,15 @@ LIBRARIES=
 SOURCES= \
  main.cpp \
  logger.cpp \
- irc/socket.cpp \
- irc/connection.cpp
+ socket.cpp \
+ queue.cpp \
+ irc/connection.cpp \
+ irc/message.cpp \
+ hydra/message.cpp \
+ hydra/session.cpp \
+ hydra/server.cpp \
+ hydra/client.cpp \
+ hydra/node.cpp
 OBJECTS=$(SOURCES: .cpp=.o)
 EXECUTABLE=hebi
 

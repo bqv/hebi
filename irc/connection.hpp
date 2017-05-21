@@ -8,7 +8,8 @@
 
 #include "../config.hpp"
 #include "../logger.hpp"
-#include "socket.hpp"
+#include "../socket.hpp"
+#include "message.hpp"
 
 namespace irc
 {
@@ -17,13 +18,14 @@ namespace irc
       private:
         void run();
         bool user(std::string pUser, std::string pHost, std::string pServer, std::string pRealName);
+        bool pong(std::string pPing);
         bool quit(std::string pMsg);
         void do_register(std::string pNick);
 
         std::mutex mLock;
         std::thread mThread;
-        std::queue<std::string> mQueue;
-        socket mSock;
+        std::queue<message> mQueue;
+        sockets::socket mSock;
         bool mRunning;
 
       public:
@@ -31,7 +33,8 @@ namespace irc
         ~connection();
 
         void start();
-        std::string get();
+        void stop();
+        message get();
         bool running();
 
         bool nick(std::string pNick);

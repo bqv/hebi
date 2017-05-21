@@ -10,8 +10,6 @@ namespace irc
 
     connection::~connection()
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        this->quit("Connection closing...");
     }
 
     void connection::start()
@@ -19,6 +17,13 @@ namespace irc
         mThread = std::thread(&connection::run, this);
         mThread.detach();
         mRunning = true;
+    }
+
+    void connection::stop()
+    {
+        this->quit("Connection closing...");
+        mSock.close();
+        mRunning = false;
     }
 
     void connection::run()
@@ -29,14 +34,40 @@ namespace irc
         std::vector<std::string> lines = mSock.recv();
         while (mSock.connected())
         {
-            std::lock_guard<std::mutex> guard(mLock);
             for (std::string line : lines)
             {
-                mQueue.push(line);
+                try
+                {
+                    message msg(line);
+                    if (msg.isPing())
+                    {
+                        this->pong(msg.all_params());
+                    }
+                    else
+                    {
+                        std::lock_guard<std::mutex> guard(mLock);
+                        mQueue.push(msg);
+                    }
+                }
+                catch (const std::invalid_argument&)
+                {
+                    log::error << "Failed to construct message from '" << line << "'";
+                }
             }
             lines = mSock.recv();
         }
         mRunning = false;
+    }
+
+    message connection::get()
+    {
+        while (mQueue.empty())
+        {
+        }
+        std::lock_guard<std::mutex> guard(mLock);
+        message msg = mQueue.front();
+        mQueue.pop();
+        return msg;
     }
 
     bool connection::running()
@@ -61,6 +92,12 @@ namespace irc
         mSock.send("NICK %", pNick);
         return true;
     }
+
+    bool connection::pong(std::string pPing)
+	{
+        mSock.send("PONG %", pPing);
+        return true;
+	}
 
     bool connection::join(std::vector<std::string> pChans)
 	{
