@@ -19,7 +19,7 @@ namespace hydra
         {
             std::string param;
             iss >> param;
-            mParams.push_back(param);
+            mParams.push(param);
         }
     }
 
@@ -66,6 +66,32 @@ namespace hydra
     bool message::is(command pCmd)
     {
         return pCmd == mCommand;
+    }
+
+    std::string message::get()
+    {
+        if (mParams.empty())
+        {
+            throw std::invalid_argument("Tried to get a nonexistent parameter");
+        }
+        return mParams.pop();
+    }
+    
+    std::string message::serialize() const
+    {
+        std::ostringstream oss;
+        oss << mCommand_str;
+        for (std::string param : mParams)
+        {
+            oss << ' ';
+            oss << param;
+        }
+        return oss.str();
+    }
+
+    bool message::operator==(const message& pMsg)
+    {
+        return (mCommand == pMsg.mCommand);
     }
 
     message::~message()

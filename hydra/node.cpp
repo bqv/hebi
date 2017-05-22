@@ -6,15 +6,33 @@ namespace hydra
         : mSock(pSock)
     {
     }
+
+    message node::read()
+    {
+        while (mQueue.empty())
+        {
+            std::vector<std::string> lines = mSock.recv();
+            for (std::string line : lines)
+            {
+                try
+                {
+                    message msg = message(line);
+                    mQueue.push(msg);
+                }
+                catch (const std::invalid_argument&)
+                {
+                }
+            }
+        }
+        return mQueue.pop();
+    }
     
     message node::expect(message::command pCmd)
     {
-        std::vector<std::string> lines;
-        
         while (mSock.connected())
         {
-            lines = mSock.recv();
-            for (auto line : lines)
+            std::vector<std::string> lines = mSock.recv();
+            for (std::string line : lines)
             {
                 try
                 {
@@ -35,5 +53,12 @@ namespace hydra
             }
         }
         return message("");
+    }
+
+    void node::run()
+    {
+        for(;;)
+        {
+        }
     }
 }

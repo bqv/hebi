@@ -7,6 +7,7 @@
 
 #include "../config.hpp"
 #include "../logger.hpp"
+#include "../queue.hpp"
 
 namespace hydra
 {
@@ -37,11 +38,14 @@ namespace hydra
         ~message();
 
         bool is(command pCmd);
+        std::string get();
+        std::string serialize() const;
+        bool operator==(const message& pMsg);
 
       private:
         command mCommand;
         std::string mCommand_str;
-        std::vector<std::string> mParams;
+        queue<std::string> mParams;
 
         void parseCommand(std::string pCommand);
     };

@@ -25,6 +25,8 @@ namespace hydra
 		server(sockets::socket pSock, session *pSess);
 		~server();
         void run();
+        void send(const message pMsg);
+        bool operator==(const server& pSrv);
 	};
 }
 

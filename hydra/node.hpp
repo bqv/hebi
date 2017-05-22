@@ -16,7 +16,9 @@ namespace hydra
         queue<message> mQueue;
 
         node(sockets::socket pSock);
+        message read();
         message expect(message::command pCmd);
+        void run();
     };
 }
 

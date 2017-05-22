@@ -8,15 +8,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "irc/connection.hpp"
+#include "hydra/session.hpp"
 #include "logger.hpp"
 
 #include <iostream>
 #include <thread>
 
-void work(irc::connection& pConn)
+void work(irc::connection& pConn, hydra::session& pSess)
 {
-    pConn.start();
-    while (pConn.running())
+    //pConn.start();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    pSess.connect(std::string("localhost"), HYDRA_PORT);
+
+    while (pConn.running() || true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(60000));
         log::debug << "Main Thread!" << log::done;
@@ -71,8 +75,9 @@ int main(int argc, char *argv[])
             }
         }
         irc::connection* connPtr = new irc::connection(host, port);
+        hydra::session* sessPtr = new hydra::session(HYDRA_PORT);
 
-        work(*connPtr);
+        work(*connPtr, *sessPtr);
 
         delete connPtr;
     }

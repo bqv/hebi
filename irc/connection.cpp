@@ -45,7 +45,6 @@ namespace irc
                     }
                     else
                     {
-                        std::lock_guard<std::mutex> guard(mLock);
                         mQueue.push(msg);
                     }
                 }
@@ -61,13 +60,7 @@ namespace irc
 
     message connection::get()
     {
-        while (mQueue.empty())
-        {
-        }
-        std::lock_guard<std::mutex> guard(mLock);
-        message msg = mQueue.front();
-        mQueue.pop();
-        return msg;
+        return mQueue.pop();
     }
 
     bool connection::running()

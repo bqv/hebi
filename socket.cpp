@@ -207,6 +207,11 @@ namespace sockets
 		return mSocks.pop();
 	}
 
+    bool socket::operator==(const socket& pSock)
+    {
+        return mSockfd == pSock.mSockfd;
+    }
+
 	socket& socket::operator=(const socket& pSock)
 	{
 		if (this != &pSock)
@@ -215,6 +220,7 @@ namespace sockets
 			mPort = pSock.mPort;
 			mSockfd = pSock.mSockfd;
 			std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
+            mAddrInfoPtr = NULL;
 			mConnected = true;
 		}
 		return *this;
@@ -226,11 +232,15 @@ namespace sockets
 		mPort = pSock.mPort;
 		mSockfd = pSock.mSockfd;
 		std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
+        mAddrInfoPtr = NULL;
 		mConnected = true;
 	}
 
 	socket::~socket()
 	{
-		freeaddrinfo(mAddrInfoPtr);
+		if (mAddrInfoPtr)
+        {
+            freeaddrinfo(mAddrInfoPtr);
+        }
 	}
 }

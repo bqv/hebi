@@ -28,6 +28,18 @@ template <class T> class queue: private std::deque<T>
             return !std::deque<T>::empty();
         }
 
+        bool empty() {
+            return std::deque<T>::empty();
+        }
+
+        auto begin() const {
+            return std::deque<T>::begin();
+        }
+
+        auto end() const {
+            return std::deque<T>::end();
+        }
+
 		T pop() {
 			std::unique_lock<std::mutex> rlck(mReaderMutex);
 			while(std::deque<T>::empty())
@@ -38,6 +50,15 @@ template <class T> class queue: private std::deque<T>
 			std::deque<T>::pop_front();
 			return value;
 		}
+
+        queue operator=(const queue& pQueue)
+        {
+            if (&pQueue != this)
+            {
+                std::deque<T>::operator=(pQueue);
+            }
+            return *this;
+        }
 
     private:
         std::mutex mReaderMutex;

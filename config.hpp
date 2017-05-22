@@ -12,4 +12,7 @@
 // irc/connection
 #define NICK "hebi"
 
+// main
+#define HYDRA_PORT 6174
+
 #endif /*CONFIG_HPP*/

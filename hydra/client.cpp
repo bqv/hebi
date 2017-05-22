@@ -11,7 +11,23 @@ namespace hydra
 
     void client::run()
     {
-        /* Knock and begin induction */
+        uint32_t med;
+
+        mSock.send("KNOCK %", mSess->nodeID);
+        message msg = node::expect(message::command::MEET);
+        med = stol(msg.get());
+        node::run();
+    }
+
+    void client::send(const message pMsg)
+    {
+        std::string msg = pMsg.serialize();
+        mSock.send(msg.c_str());
+    }
+
+    bool client::operator==(const client& pSrv)
+    {
+        return mSock == pSrv.mSock;
     }
 
     client::~client()

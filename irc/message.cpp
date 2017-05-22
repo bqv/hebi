@@ -102,7 +102,7 @@ namespace irc
 
     message::message(const message& obj)
     {
-        if (!obj.mHostmask)
+        if (obj.mHostmask)
         {
             mHostmask = new hostmask;
             mHostmask->nick = obj.mHostmask->nick;
@@ -120,7 +120,7 @@ namespace irc
     {
         if (this != &obj)
         {
-            if (!obj.mHostmask)
+            if (obj.mHostmask)
             {
                 mHostmask = new hostmask;
                 mHostmask->nick = obj.mHostmask->nick;

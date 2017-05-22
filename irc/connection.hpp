@@ -9,6 +9,7 @@
 #include "../config.hpp"
 #include "../logger.hpp"
 #include "../socket.hpp"
+#include "../queue.hpp"
 #include "message.hpp"
 
 namespace irc
@@ -22,9 +23,8 @@ namespace irc
         bool quit(std::string pMsg);
         void do_register(std::string pNick);
 
-        std::mutex mLock;
         std::thread mThread;
-        std::queue<message> mQueue;
+        queue<message> mQueue;
         sockets::socket mSock;
         bool mRunning;
 

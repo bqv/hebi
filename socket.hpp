@@ -43,6 +43,7 @@ namespace sockets
 		socket& operator=(const socket& pSock);
 		~socket();
 
+        bool operator==(const socket& pSock);
 		void listen();
 		template<typename T, typename... Types>
 		void send(const char *pFmt, T pValue, Types... pRest);
