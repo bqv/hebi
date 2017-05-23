@@ -24,23 +24,33 @@ template <class T> class queue: private std::deque<T>
             mIsEmpty.notify_all();
         }
 
-        bool notEmpty() {
+        bool notEmpty()
+        {
             return !std::deque<T>::empty();
         }
 
-        bool empty() {
+        bool empty()
+        {
             return std::deque<T>::empty();
         }
 
-        auto begin() const {
+        auto begin() const
+        {
             return std::deque<T>::begin();
         }
 
-        auto end() const {
+        auto end() const
+        {
             return std::deque<T>::end();
         }
 
-		T pop() {
+        T operator[](int i) const
+        {
+            return std::deque<T>::operator[](i);
+        }
+
+		T pop()
+        {
 			std::unique_lock<std::mutex> rlck(mReaderMutex);
 			while(std::deque<T>::empty())
 			{

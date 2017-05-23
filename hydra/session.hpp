@@ -5,8 +5,8 @@
 #include <deque>
 #include <vector>
 #include <thread>
-
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdint>
 
 #include "../config.hpp"
 #include "../logger.hpp"
@@ -36,7 +36,7 @@ namespace hydra
         void broadcast(server& pSrv, message pMsg);
         void broadcast(client& pClnt, message pMsg);
 
-        const uint32_t nodeID;
+        const std::uint32_t nodeID;
     };
 }
 
