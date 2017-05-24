@@ -71,7 +71,7 @@ namespace hydra
         std::string get();
         std::string serialize() const;
         message derived();
-        bool operator==(const message& pMsg);
+        virtual bool operator==(const message& pMsg);
 
     protected:
         queue<std::string> mParams;

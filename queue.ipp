@@ -19,10 +19,25 @@ template <class T> class queue: private std::deque<T>
 
         void push(T pItem)
 		{
+            log::debug << LOC() << "Pushing" << log::done;
             std::unique_lock<std::mutex> wlck(mWriterMutex);
             std::deque<T>::push_back(pItem);
+            log::debug << LOC() << "Notifying " << &mIsEmpty << log::done;
             mIsEmpty.notify_all();
         }
+
+		T pop()
+        {
+			std::unique_lock<std::mutex> rlck(mReaderMutex);
+			while(std::deque<T>::empty())
+			{
+                log::debug << LOC() << "Waiting on " << &mIsEmpty << log::done;
+				mIsEmpty.wait(rlck);
+			}
+			T value = std::deque<T>::front();
+			std::deque<T>::pop_front();
+			return value;
+		}
 
         bool notEmpty()
         {
@@ -48,18 +63,6 @@ template <class T> class queue: private std::deque<T>
         {
             return std::deque<T>::operator[](i);
         }
-
-		T pop()
-        {
-			std::unique_lock<std::mutex> rlck(mReaderMutex);
-			while(std::deque<T>::empty())
-			{
-				mIsEmpty.wait(rlck);
-			}
-			T value = std::deque<T>::front();
-			std::deque<T>::pop_front();
-			return value;
-		}
 
         queue operator=(const queue& pQueue)
         {
