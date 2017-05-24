@@ -6,6 +6,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cerrno>
+#include <cstring>
+#include <thread>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -47,6 +50,7 @@ namespace sockets
 		void listen();
 		template<typename T, typename... Types>
 		void send(const char *pFmt, T pValue, Types... pRest);
+
 		void send(const char *pFmt);
 		std::vector<std::string> recv();
 		bool connected();

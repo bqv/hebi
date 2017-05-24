@@ -5,6 +5,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <thread>
 
 #include "config.hpp"
 
@@ -38,6 +39,7 @@ namespace log
 
         template <typename T>
         friend log_line& operator<< (log_line& pLogLine, T pValue);
+
         friend log_line& operator<< (log_line& pLogLine, log_line& (&pf)(log_line&));
         friend log_line& operator<< (log_line& pLogLine, std::ostream& (&pf)(std::ostream&));
 
@@ -75,6 +77,7 @@ namespace log
     extern logger fatal, error, warn, info, debug;
 };
 
+#include "thread.hpp"
 #include "logger.ipp"
 
 #endif /*LOGGER_HPP*/

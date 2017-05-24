@@ -5,11 +5,13 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <chrono>
 
 #include "../config.hpp"
 #include "../logger.hpp"
 #include "../socket.hpp"
 #include "../queue.hpp"
+#include "../thread.hpp"
 #include "message.hpp"
 
 namespace irc

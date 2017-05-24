@@ -1,5 +1,4 @@
 #include "connection.hpp"
-#include <chrono>
 
 namespace irc
 {

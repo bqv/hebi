@@ -16,7 +16,7 @@
 
 void work(irc::connection& pConn, hydra::session& pSess)
 {
-    //pConn.start();
+    pConn.start();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     pSess.connect(std::string("localhost"), HYDRA_PORT);
 
