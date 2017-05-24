@@ -13,7 +13,7 @@ namespace irc
 
     void connection::start()
     {
-        mThread = std::thread(&connection::run, this);
+        mThread = thread::make_thread("irc::connection::run", &connection::run, this);
         mThread.detach();
         mRunning = true;
     }

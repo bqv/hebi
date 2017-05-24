@@ -103,6 +103,7 @@ namespace sockets
 
 	void socket::listen()
 	{
+		log::debug << LOC() << "Socket listening" << log::done;
 		int sockfd;
 		socklen_t clilen;
 		struct sockaddr_in cli_addr;
@@ -140,7 +141,7 @@ namespace sockets
 		{
 			if (len - diff < 0)
 			{
-				log::warn << "IRC Disconnected" << log::done;
+				log::warn << "Disconnected" << log::done;
 				mConnected = false;
 				return;
 			}
@@ -157,14 +158,16 @@ namespace sockets
 		std::lock_guard<std::recursive_mutex> guard(mLock);
 		std::vector<std::string> lines;
 
+        log::debug << LOC() << "(" << mSockfd << ") Starting Recv" << log::done;
 		char data[IRC_MAXBUF] = {0};
 		ssize_t carry = strlen(mInBuf);
 		strcpy(data, mInBuf);
 		memset(mInBuf, 0, IRC_MAXLINE);
 		ssize_t len = ::recv(mSockfd, data+carry, IRC_MAXBUF-carry-1, false);
+        log::debug << LOC() << "(" << mSockfd << ") Recv got " << len << " bytes" << log::done;
 		if (len <= 0)
 		{
-			log::warn << "IRC Disconnected" << log::done;
+			log::warn << LOC() << "(" << mSockfd << ") Disconnected" << log::done;
 			mConnected = false;
 			return lines;
 		}

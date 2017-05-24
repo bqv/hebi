@@ -20,6 +20,9 @@ namespace log
 
         // Todo: timestamp
         logLine << '+' << +pLogger.mStatusCode << ' ' << pLogger.mLevelName << ' ';
+#ifdef   DEBUG
+		logLine << std::hex << "<" << thread::get_current_name() << "> " << std::dec;
+#endif /*DEBUG*/
         logLine << pValue;
         return pLogger;
     }

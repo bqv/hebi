@@ -5,7 +5,7 @@ namespace hydra
     session::session(unsigned short pPort)
         : mSock(pPort), nodeID(rand())
     {
-		mListener = std::thread(&session::listen, this);
+		mListener = thread::make_thread("hydra::session::listen", &session::listen, this);
 		mListener.detach();
     }
 
@@ -17,14 +17,15 @@ namespace hydra
 
     void session::listen()
     {
-        std::thread listener(&sockets::socket::listen, mSock);
+        std::thread listener = thread::make_thread("sockets::socket::listen", &sockets::socket::listen, mSock);
 		listener.detach();
 
 		for(;;)
 		{
+            log::debug << LOC() << "Waiting for socket" << log::done;
 			sockets::socket sock = mSock.get();
-			server srv(sock, this);
-			mServers.push_back(srv);
+            log::debug << LOC() << "Creating server..." << log::done;
+			mServers.push_back(server(sock, this));
 		}
     }
 
