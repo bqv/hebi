@@ -9,6 +9,7 @@
 #include "../config.hpp"
 #include "../logger.hpp"
 #include "../socket.hpp"
+#include "../thread.hpp"
 #include "node.hpp"
 
 namespace hydra

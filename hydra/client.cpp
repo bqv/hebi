@@ -6,16 +6,16 @@ namespace hydra
         : node(pSock)
     {
         mSess = std::shared_ptr<session>(pSess);
-        mThread = std::shared_ptr<std::thread>(new std::thread(&client::run, this));
+        mThread = std::shared_ptr<std::thread>(thread::make_thread_ptr("hydra::client::run", &client::run, this));
     }
 
     void client::run()
     {
-        uint32_t med;
-
         mSock.send("KNOCK %", mSess->nodeID);
         message msg = node::expect(message::command::MEET);
-        med = stol(msg.get());
+        meet meetMsg = (meet) msg.derived();
+        std::uint32_t mediator_id = meetMsg.med;
+        node::addNode(mediator_id);
         node::run();
     }
 

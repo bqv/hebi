@@ -55,6 +55,17 @@ namespace hydra
         return message("");
     }
 
+    void node::addNode(std::uint32_t pId)
+    {
+        mNodes.push_back(pId);
+        std::sort(mNodes.begin(), mNodes.end());
+    }
+
+    void node::rmNode(std::uint32_t pId)
+    {
+        mNodes.erase(std::remove(mNodes.begin(), mNodes.end(), pId), mNodes.end());
+    }
+
     void node::run()
     {
         for(;;)
