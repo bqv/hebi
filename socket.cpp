@@ -52,11 +52,18 @@ namespace sockets
 				continue;
 			}
 
-			if (int ret = connect(mSockfd, ai->ai_addr, ai->ai_addrlen))
+			int ret;
+			for (int i = 1; i < 32; i *= 2)
 			{
-				log::warn << LOC() << "Connection to " << ip << " failed [" << ret << "]" << log::done;
+				if ((ret = connect(mSockfd, ai->ai_addr, ai->ai_addrlen)))
+				{
+					log::warn << LOC() << "(" << mSockfd << ") Connection to " << ip << " failed [" << std::strerror(errno) << "]" << log::done;
+					log::debug << LOC() << "(" << mSockfd << ") Retrying in " << i << "..." << log::done;
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000*i));
+				}
+				else break;
 			}
-			else break;
+			if (!ret) break;
 		}
 		if ( ai == NULL ) 
 		{
@@ -87,11 +94,18 @@ namespace sockets
 		serv_addr.sin_addr.s_addr = INADDR_ANY;
 		serv_addr.sin_port = htons(mPort);
 
-		if (bind(mSockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
+		int ret;
+		for (int i = 1; i < 32; i *= 2)
 		{
-			log::error << "Failed to bind socket" << log::done;
-			return;
+			if ((ret = bind(mSockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0))
+			{
+				log::error << LOC() << "(" << mSockfd << ") Failed to bind socket [" << std::strerror(errno) << "]" << log::done;
+				log::debug << LOC() << "(" << mSockfd << ") Retrying in " << i << "..." << log::done;
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000*i));
+			}
+			else break;
 		}
+		if (ret) return;
 
 		::listen(mSockfd, 5);
 	}
