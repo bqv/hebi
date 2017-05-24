@@ -60,12 +60,12 @@ namespace sockets
 		}
 		if ( ai == NULL ) 
 		{
-			log::error << LOC() << "Could not connect to host: " << mHost << log::done;
+			log::error << LOC() << "(" << mSockfd << ") Could not connect to host: " << mHost << log::done;
 			throw std::runtime_error(LOC() "Connection failed");
 		}
 		else
 		{
-			log::info << "Connected to " << mHost << "!" << log::done;
+			log::info << LOC() << "(" << mSockfd << ") Connected to " << mHost << "!" << log::done;
 			mConnected = true;
 		}
 	}
@@ -78,7 +78,7 @@ namespace sockets
 		mSockfd = ::socket(AF_INET, SOCK_STREAM, 0);
 		if (mSockfd < 0) 
 		{
-			log::error << "Failed opening socket" << log::done;
+			log::error << LOC() << "(" << mSockfd << ") Failed opening socket" << log::done;
 			return;
 		}
 
@@ -113,14 +113,14 @@ namespace sockets
 		sockfd = accept(mSockfd, (struct sockaddr *) &cli_addr, &clilen);
 		if (sockfd < 0) 
 		{
-			log::error << "Failed to accept connection on socket" << log::done;
+			log::error << LOC() << "(" << sockfd << ") Failed to accept connection on socket" << log::done;
 			return;
 		}
 		else
 		{
 			inet_ntop(AF_INET, &cli_addr, buffer, clilen);
-			log::info << "Accepted connection: " << buffer << log::done;
-			class socket sock(sockfd);
+			log::info << LOC() << "(" << sockfd << ") Accepted connection: " << buffer << log::done;
+			socket sock(sockfd);
 			mSocks.push(sock);
 			listen();
 		}
@@ -205,7 +205,7 @@ namespace sockets
 		mConnected = false;
 	}
 
-	class socket socket::get()
+	socket socket::get()
 	{
 		return mSocks.pop();
 	}
