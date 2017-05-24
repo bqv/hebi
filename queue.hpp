@@ -5,6 +5,8 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "logger.hpp"
+
 #include "queue.ipp"
 
 #endif /*QUEUE_HPP*/

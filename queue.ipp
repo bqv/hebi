@@ -1,4 +1,5 @@
-template <class T> class queue: private std::deque<T>
+template <class T>
+class queue: private std::deque<T>
 {
     public:
         queue()
