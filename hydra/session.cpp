@@ -3,7 +3,7 @@
 namespace hydra
 {
     session::session(unsigned short pPort)
-        : mSock(pPort), nodeID(rand())
+        : mSock(pPort), mNodeId(rand())
     {
 		mListener = thread::make_thread("hydra::session::listen", &session::listen, this);
 		mListener.detach();
@@ -80,6 +80,11 @@ namespace hydra
             clnt.send(pMsg);
         }
     }
+
+	std::uint32_t session::nodeId()
+	{
+		return mNodeId;
+	}
 
     session::~session()
     {

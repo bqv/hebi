@@ -11,4 +11,11 @@ namespace thread
         std::lock_guard<std::mutex> lock(mutex);
         return names[tid];
     }
+    
+    void init()
+    {
+        std::thread::id tid = std::this_thread::get_id();
+        std::lock_guard<std::mutex> lock(mutex);
+        names[tid] = std::string("main");
+    }
 }

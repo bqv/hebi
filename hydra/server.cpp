@@ -3,11 +3,10 @@
 namespace hydra
 {
     server::server(sockets::socket pSock, session *pSess)
-        : node(pSock)
+        : node(pSock), mSess(pSess)
     {
-        mSess = std::shared_ptr<session>(pSess);
-        log::debug << "Creating server" << log::done;
-        mThread = std::shared_ptr<std::thread>(thread::make_thread_ptr("hydra::server::run", &server::run, this));
+        mThreadPtr = std::shared_ptr<std::thread>(thread::make_thread_ptr("hydra::server::run", &server::run, this));
+		mThreadPtr->detach();
     }
 
     void server::run()
@@ -19,7 +18,7 @@ namespace hydra
             {
                 knock knockMsg = (knock) msg.derived();
                 std::uint32_t client_id = knockMsg.id;
-                mSock.send("MEET % %", client_id, mSess->nodeID);
+                mSock.send("MEET % %", client_id, mSess->nodeId());
                 mSess->broadcast(*this, knockMsg);
                 node::run();
             }

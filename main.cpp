@@ -9,22 +9,24 @@
 
 #include "irc/connection.hpp"
 #include "hydra/session.hpp"
+#include "thread.hpp"
 #include "logger.hpp"
 
 #include <iostream>
 #include <thread>
+#include <memory>
 
-void work(irc::connection& pConn, hydra::session& pSess)
+void work(std::shared_ptr<irc::connection> pConn, std::shared_ptr<hydra::session> pSess)
 {
-    pConn.start();
+    //pConn->start();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    pSess.connect(std::string("localhost"), HYDRA_PORT);
+    pSess->connect(std::string("localhost"), HYDRA_PORT);
 
-    while (pConn.running() || true)
+    while (pConn->running() || true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(60000));
         log::debug << "Main Thread!" << log::done;
-        //pConn.stop();
+        //pConn->stop();
     }
 }
 
@@ -35,6 +37,8 @@ void usage(char *pBinary)
 
 int main(int argc, char *argv[])
 {
+	thread::init();
+
     std::vector<std::string> args(argv + 1, argv + argc);
 	log::info << "Starting Hebi" << log::done;
 	auto logentry = log::debug << "Args:";
@@ -74,12 +78,10 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
             }
         }
-        irc::connection* connPtr = new irc::connection(host, port);
-        hydra::session* sessPtr = new hydra::session(HYDRA_PORT);
+        std::shared_ptr<irc::connection> connPtr = std::shared_ptr<irc::connection>(new irc::connection(host, port));
+        std::shared_ptr<hydra::session> sessPtr = std::shared_ptr<hydra::session>(new hydra::session(HYDRA_PORT));
 
-        work(*connPtr, *sessPtr);
-
-        delete connPtr;
+        work(connPtr, sessPtr);
     }
 	return EXIT_SUCCESS;
 }

@@ -53,7 +53,7 @@ namespace sockets
 			}
 
 			int ret;
-			for (int i = 1; i < 32; i *= 2)
+			for (int i = 1; i < (1 << MAX_RETRY); i *= 2)
 			{
 				if ((ret = connect(mSockfd, ai->ai_addr, ai->ai_addrlen)))
 				{
@@ -82,6 +82,8 @@ namespace sockets
 	{
 		struct sockaddr_in serv_addr;
 
+		mConnected = false;
+
 		mSockfd = ::socket(AF_INET, SOCK_STREAM, 0);
 		if (mSockfd < 0) 
 		{
@@ -95,7 +97,7 @@ namespace sockets
 		serv_addr.sin_port = htons(mPort);
 
 		int ret;
-		for (int i = 1; i < 32; i *= 2)
+		for (int i = 1; i < (1 << MAX_RETRY); i *= 2)
 		{
 			if ((ret = bind(mSockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0))
 			{
@@ -113,6 +115,7 @@ namespace sockets
 	socket::socket(int pSockfd)
 		: mSockfd(pSockfd)
 	{
+		mConnected = true;
 	}
 
 	void socket::listen()
@@ -144,7 +147,8 @@ namespace sockets
 	{
 		std::lock_guard<std::recursive_mutex> guard(mLock);
 		mOutBuf << pFmt;
-		log::info << "-<- " << mOutBuf.str() << log::done;
+		std::string logLine = mOutBuf.str();
+		log::info << "-<- " << logLine << log::done;
 		mOutBuf << "\r\n";
 		std::string line = mOutBuf.str();
 		ssize_t len = line.size();
@@ -238,6 +242,7 @@ namespace sockets
 			mSockfd = pSock.mSockfd;
 			std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
             mAddrInfoPtr = NULL;
+			mOutBuf.str(pSock.mOutBuf.str());
 			mConnected = true;
 		}
 		return *this;
@@ -250,6 +255,7 @@ namespace sockets
 		mSockfd = pSock.mSockfd;
 		std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
         mAddrInfoPtr = NULL;
+		mOutBuf.str(pSock.mOutBuf.str());
 		mConnected = true;
 	}
 

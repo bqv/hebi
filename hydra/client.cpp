@@ -3,15 +3,17 @@
 namespace hydra
 {
     client::client(sockets::socket pSock, session *pSess)
-        : node(pSock)
+        : node(pSock), mSess(pSess)
     {
-        mSess = std::shared_ptr<session>(pSess);
-        mThread = std::shared_ptr<std::thread>(thread::make_thread_ptr("hydra::client::run", &client::run, this));
+        mThreadPtr = std::shared_ptr<std::thread>(thread::make_thread_ptr("hydra::client::run", &client::run, this));
+		mThreadPtr->detach();
     }
 
     void client::run()
     {
-        mSock.send("KNOCK %", mSess->nodeID);
+		session& sess = *mSess;
+		std::uint32_t nodeId = sess.nodeId();
+        mSock.send("KNOCK %", nodeId);
         message msg = node::expect(message::command::MEET);
         meet meetMsg = (meet) msg.derived();
         std::uint32_t mediator_id = meetMsg.med;

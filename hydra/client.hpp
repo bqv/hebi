@@ -19,8 +19,8 @@ namespace hydra
 	class client : private node
 	{
 	  private:
-        std::shared_ptr<session> mSess;
-		std::shared_ptr<std::thread> mThread;
+        session *mSess;
+		std::shared_ptr<std::thread> mThreadPtr;
 
 	  public:
 		client(sockets::socket pSock, session *pSess);

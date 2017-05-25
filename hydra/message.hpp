@@ -73,7 +73,7 @@ namespace hydra
         message derived();
         virtual bool operator==(const message& pMsg);
 
-    protected:
+      protected:
         queue<std::string> mParams;
         command mCommand;
         std::string mCommand_str;

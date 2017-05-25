@@ -8,6 +8,7 @@
 #define V4_ONLY true
 #define IRC_MAXBUF 4096
 #define IRC_MAXLINE 512
+#define MAX_RETRY 5
 
 // irc/connection
 #define NICK "hebi"

@@ -23,7 +23,7 @@ all: $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 		$(CXX) $(INCLUDES) -o $@ $(OBJECTS) $(CXXFLAGS) $(LDFLAGS) $(LIBRARIES)
 
-main.o: main.cpp logger.hpp irc/connection.hpp hydra/session.hpp
+main.o: main.cpp logger.hpp irc/connection.hpp hydra/session.hpp thread.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
 logger.hpp: logger.ipp

@@ -28,6 +28,7 @@ namespace hydra
 		std::vector<server> mServers;
 		std::vector<client> mClients;
         std::deque<message> mSeen;
+        const std::uint32_t mNodeId;
 
       public:
         session(unsigned short pPort);
@@ -36,8 +37,7 @@ namespace hydra
         void listen();
         void broadcast(server& pSrv, message pMsg);
         void broadcast(client& pClnt, message pMsg);
-
-        const std::uint32_t nodeID;
+		std::uint32_t nodeId();
     };
 }
 
