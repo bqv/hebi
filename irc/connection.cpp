@@ -130,4 +130,9 @@ namespace irc
         return true;
 	}
 
+    void connection::send(irc::message pMsg)
+    {
+        std::string line = pMsg.serialize();
+        mSock.send(line.c_str());
+    }
 }

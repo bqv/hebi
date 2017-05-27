@@ -45,6 +45,7 @@ namespace irc
         bool part(std::string pChan, std::string pMsg);
         bool privmsg(std::string pChan, std::string pMsg);
         bool notice(std::string pChan, std::string pMsg);
+        void send(irc::message pMsg);
     };
 }
 

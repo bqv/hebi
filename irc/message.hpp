@@ -49,6 +49,7 @@ namespace irc
         message& operator=(const message& obj);
         bool isPing();
         std::string all_params();
+		std::string serialize() const;
     };
 }
 

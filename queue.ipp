@@ -21,21 +21,21 @@ class queue: private std::deque<T>
         void push(T pItem)
 		{
             log::debug << LOC() << "Pushing" << log::done;
-            std::unique_lock<std::mutex> wlck(mWriterMutex);
+            std::unique_lock<std::mutex> lock(mMutex);
             std::deque<T>::push_back(pItem);
             log::debug << LOC() << "Notifying " << &mIsEmpty << log::done;
-            mIsEmpty.notify_all();
+            mIsEmpty.notify_one();
         }
 
 		T pop()
         {
-			std::unique_lock<std::mutex> rlck(mReaderMutex);
+			std::unique_lock<std::mutex> lock(mMutex);
 			while(std::deque<T>::empty())
 			{
                 log::debug << LOC() << "Waiting on " << &mIsEmpty << log::done;
-				mIsEmpty.wait(rlck);
+				mIsEmpty.wait(lock);
 			}
-			T value = std::deque<T>::front();
+			T value = std::move(std::deque<T>::front());
 			std::deque<T>::pop_front();
 			return value;
 		}
@@ -75,7 +75,6 @@ class queue: private std::deque<T>
         }
 
     private:
-        std::mutex mReaderMutex;
-        std::mutex mWriterMutex;
+        std::mutex mMutex;
         std::condition_variable mIsEmpty;
 };

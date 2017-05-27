@@ -1,8 +1,11 @@
 CXX=clang++
-CXXFLAGS=-pthread -std=c++1y -ggdb -Wall -Wextra -Wpedantic -Werror #-O2
+CXXFLAGS=-pthread -std=c++1y -g -Wall -Wextra -Wpedantic -Werror #-O2
+INCLUDES=-I /usr/lib/ghc/include/
 GDB=gdb
-LDFLAGS=-Wl,--no-as-needed
-LIBRARIES=
+LDFLAGS=-lstdc++ -lpthread
+LIBRARIES=-lstdc++
+GHC=ghc
+GHCOPTS=-XForeignFunctionInterface -optl-pthread
 OBJECTS= \
  main.o \
  logger.o \
@@ -15,13 +18,18 @@ OBJECTS= \
  hydra/session.o \
  hydra/server.o \
  hydra/client.o \
- hydra/node.o
+ hydra/node.o \
+ plugin/manager.o \
+ plugin/plugin.o \
+ plugin/haskell.o \
+ plugin/haskell/Plugin.o \
+ plugin/haskell/Message.o
 EXECUTABLE=hebi
 
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-		$(CXX) $(INCLUDES) -o $@ $(OBJECTS) $(CXXFLAGS) $(LDFLAGS) $(LIBRARIES)
+		$(GHC) -o $@ -no-hs-main -optc-O $(OBJECTS) $(LDFLAGS) $(LIBRARIES)
 
 main.o: main.cpp logger.hpp irc/connection.hpp hydra/session.hpp thread.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
@@ -63,13 +71,21 @@ hydra/client.o: hydra/client.cpp hydra/client.hpp config.hpp logger.hpp socket.h
 hydra/node.o: hydra/node.cpp hydra/node.hpp socket.hpp queue.hpp hydra/message.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
+plugin/manager.o: plugin/manager.cpp plugin/manager.hpp plugin/plugin.cpp irc/message.hpp
+		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
+
+plugin/plugin.o: plugin/plugin.cpp plugin/plugin.hpp irc/message.hpp
+		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
+
+plugin/haskell.o: plugin/haskell.cpp plugin/haskell.hpp plugin/plugin.cpp plugin/haskell/Plugin_stub.h irc/message.hpp
+		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
+
+plugin/haskell/Plugin_stub.h: plugin/haskell/Plugin.o
+plugin/haskell/Plugin.o: plugin/haskell/Plugin.hs plugin/haskell/Message.o
+		cd plugin/haskell/; $(GHC) -c $(GHCOPTS) -O $(shell basename $<)
+
+plugin/haskell/Message.o: plugin/haskell/Message.hs
+		cd plugin/haskell/; $(GHC) -optl-static -O $(shell basename $<)
+
 clean:
-		$(RM) $(EXECUTABLE) *.o */*.o
-
-dbg: $(EXECUTABLE)
-		$(GDB) $(EXECUTABLE)
-
-rmr:
-		$(RM) $(EXECUTABLE) *.o */*.o
-		$(MAKE) all
-		./$(EXECUTABLE) irc.subluminal.net 6667 || true
+		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o

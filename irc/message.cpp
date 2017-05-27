@@ -138,7 +138,7 @@ namespace irc
 
     message::~message()
     {
-        if (!mHostmask)
+        if (mHostmask)
         {
             free(mHostmask);
         }
@@ -162,6 +162,33 @@ namespace irc
             oss << ':';
             oss << mTrailing;
         }
+        return oss.str();
+    }
+    
+    std::string message::serialize() const
+    {
+        std::ostringstream oss;
+		if (mHostmask)
+		{
+			oss << ':';
+			oss << mHostmask->nick;
+			oss << '!';
+			oss << mHostmask->user;
+			oss << '@';
+			oss << mHostmask->host;
+			oss << ' ';
+		}
+        oss << mCommand_str;
+        for (std::string param : mParams)
+        {
+            oss << ' ';
+            oss << param;
+        }
+		if (!mTrailing.empty())
+		{
+			oss << " :";
+			oss << mTrailing;
+		}
         return oss.str();
     }
 }
