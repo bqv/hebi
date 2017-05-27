@@ -39,14 +39,14 @@ int main(int argc, char *argv[])
 	thread::init();
 
     std::vector<std::string> args(argv + 1, argv + argc);
-	log::info << "Starting Hebi" << log::done;
-	auto logentry = log::debug << "Args:";
+	logs::info << "Starting Hebi" << logs::done;
+	auto logentry = logs::debug << "Args:";
     for (std::string arg : args)
     {
         logentry << " " << arg;
     }
-    logentry << log::done;
-    log::info << log::done;
+    logentry << logs::done;
+    logs::info << logs::done;
 
     if (args.size() < 1)
     {
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         int port = 6667;
         if (args.size() < 2)
         {
-            log::warn << "No port specified, defaulting to 6667" << log::done;
+            logs::warn << "No port specified, defaulting to 6667" << logs::done;
         }
         else
         {
@@ -68,12 +68,12 @@ int main(int argc, char *argv[])
             }
             catch (const std::invalid_argument&)
             {
-                log::fatal << "Port must be a number" << log::done;
+                logs::fatal << "Port must be a number" << logs::done;
                 return EXIT_FAILURE;
             }
             if (port > 65535 || port < 1)
             {
-                log::fatal << "Port must be between 1-65535" << log::done;
+                logs::fatal << "Port must be between 1-65535" << logs::done;
                 return EXIT_FAILURE;
             }
         }

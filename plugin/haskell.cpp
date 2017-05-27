@@ -11,6 +11,7 @@ namespace plugin
     haskell::haskell(manager *pManager, int *pArgc, char ***pArgv)
         : plugin(pManager)
     {
+        logs::debug << LOC() "Initializing Haskell" << logs::done;
         hs_init(pArgc, pArgv);
 #ifdef __GLASGOW_HASKELL__
         hs_add_root(__stginit_Safe);
@@ -19,9 +20,9 @@ namespace plugin
     
     void haskell::handle(irc::message pMsg)
     {
-        log::debug << LOC() "Running Haskell" << log::done;
+        logs::debug << LOC() "Running Haskell" << logs::done;
         std::string line = pMsg.serialize();
-        return handle_hs((HsPtr) line.c_str());
+        handle_hs((HsPtr) line.c_str());
     }
 
     haskell::~haskell()

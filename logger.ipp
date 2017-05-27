@@ -1,4 +1,4 @@
-namespace log
+namespace logs
 {
     template <typename T>
     log_line& operator<< (log_line& pLogLine, T pValue)

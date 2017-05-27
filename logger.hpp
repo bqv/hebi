@@ -22,7 +22,7 @@
   #define DEBUG_STREAM *(new std::ostream(new NullBuffer()))
 #endif
 
-namespace log
+namespace logs
 {
     class log_line
     {

@@ -6,6 +6,7 @@
 #include "../irc/connection.hpp"
 #include "../irc/message.hpp"
 #include "haskell.hpp"
+#include "python.hpp"
 
 namespace plugin
 {

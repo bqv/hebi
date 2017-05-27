@@ -1,11 +1,13 @@
+CC=clang
+CFLAGS=
 CXX=clang++
 CXXFLAGS=-pthread -std=c++1y -g -Wall -Wextra -Wpedantic -Werror #-O2
-INCLUDES=-I /usr/lib/ghc/include/
-GDB=gdb
+INCLUDES=-I /usr/lib/ghc/include/ -I /usr/include/python3.5m
 LDFLAGS=-lstdc++ -lpthread
-LIBRARIES=-lstdc++
+LIBRARIES=-lstdc++ -lpython3.5m -package text
 GHC=ghc
 GHCOPTS=-XForeignFunctionInterface -optl-pthread
+CYTHON=cython
 OBJECTS= \
  main.o \
  logger.o \
@@ -23,7 +25,9 @@ OBJECTS= \
  plugin/plugin.o \
  plugin/haskell.o \
  plugin/haskell/Plugin.o \
- plugin/haskell/Message.o
+ plugin/haskell/Message.o \
+ plugin/python.o \
+ plugin/python/plugin.o
 EXECUTABLE=hebi
 
 all: $(EXECUTABLE)
@@ -86,6 +90,15 @@ plugin/haskell/Plugin.o: plugin/haskell/Plugin.hs plugin/haskell/Message.o
 
 plugin/haskell/Message.o: plugin/haskell/Message.hs
 		cd plugin/haskell/; $(GHC) -optl-static -O $(shell basename $<)
+
+plugin/python.o: plugin/python.cpp plugin/python.hpp plugin/plugin.cpp plugin/python/plugin.h irc/message.hpp
+		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
+
+plugin/python/plugin.c plugin/python/plugin.h: plugin/python/plugin.pyx
+		$(CYTHON) $<
+
+plugin/python/plugin.o: plugin/python/plugin.c plugin/python/plugin.h
+		$(CC) $(INCLUDES) -c $< -o $@ $(CFLAGS)
 
 clean:
 		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o

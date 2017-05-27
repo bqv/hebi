@@ -7,11 +7,13 @@ namespace plugin
     {
         haskell *hs = new haskell(this, pArgc, pArgv);
         mPlugins.push_back(std::shared_ptr<plugin>(hs));
+        python *py = new python(this);
+        mPlugins.push_back(std::shared_ptr<plugin>(py));
     }
 
     void manager::handle(irc::message pMsg)
     {
-        log::debug << LOC() "Handling message" << log::done;
+        logs::debug << LOC() "Handling message" << logs::done;
         for (std::shared_ptr<plugin> plg : mPlugins)
         {
             plg->handle(pMsg);

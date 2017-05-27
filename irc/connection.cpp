@@ -49,7 +49,7 @@ namespace irc
                 }
                 catch (const std::invalid_argument&)
                 {
-                    log::error << "Failed to construct message from '" << line << "'";
+                    logs::error << "Failed to construct message from '" << line << "'" << logs::done;
                 }
             }
             lines = mSock.recv();

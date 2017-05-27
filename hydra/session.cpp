@@ -22,9 +22,9 @@ namespace hydra
 
 		for(;;)
 		{
-            log::debug << LOC() << "Waiting for socket" << log::done;
+            logs::debug << LOC() << "Waiting for socket" << logs::done;
 			sockets::socket sock = mSock.get();
-            log::debug << LOC() << "Creating server..." << log::done;
+            logs::debug << LOC() << "Creating server..." << logs::done;
 			mServers.push_back(server(sock, this));
 		}
     }

@@ -12,22 +12,22 @@ namespace sockets
 		std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
 		mConnected = false;
 
-		auto logentry = log::debug << LOC() << "Using host " << mHost << " with port " << mPort;
-		logentry << " on " << (V4_ONLY ? "IPv4" : "IPv6") << log::done;
+		auto logentry = logs::debug << LOC() << "Using host " << mHost << " with port " << mPort;
+		logentry << " on " << (V4_ONLY ? "IPv4" : "IPv6") << logs::done;
 	  
 		memset(&hints, 0, sizeof hints);
 		hints.ai_family = V4_ONLY ? AF_INET : AF_UNSPEC; // IPv4 or 6 (AF_INET or AF_INET6)
 		hints.ai_socktype = SOCK_STREAM; // TCP
 		hints.ai_flags = AI_PASSIVE; // Autodetect local host
 
-		log::debug << LOC() << "Resolving host..." << log::done;
+		logs::debug << LOC() << "Resolving host..." << logs::done;
 		if (int ret = getaddrinfo(mHost, std::to_string(mPort).c_str(), &hints, &mAddrInfoPtr))
 		{
-			auto logentry = log::error << LOC() << "Failed to resolve host: " << mHost;
-			logentry << " (" << ret << ":" << gai_strerror(ret) << ")" << log::done;
+			auto logentry = logs::error << LOC() << "Failed to resolve host: " << mHost;
+			logentry << " (" << ret << ":" << gai_strerror(ret) << ")" << logs::done;
 			throw std::runtime_error(LOC() "Hostname not resolved");
 		}
-		log::debug << LOC() << "Done." << log::done;
+		logs::debug << LOC() << "Done." << logs::done;
 
 		for ( ai = mAddrInfoPtr; ai != NULL; ai = ai->ai_next )
 		{
@@ -44,11 +44,11 @@ namespace sockets
 			}
 			inet_ntop(ai->ai_family, server, ip, sizeof ip);
 
-			log::debug << LOC() << "Connecting to " << mHost << " (" << ip << ")... " << log::done;
+			logs::debug << LOC() << "Connecting to " << mHost << " (" << ip << ")... " << logs::done;
 
 			if ( (mSockfd = ::socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) < 0 )
 			{ 
-				log::warn << LOC() << "Could not create socket" << log::done;
+				logs::warn << LOC() << "Could not create socket" << logs::done;
 				continue;
 			}
 
@@ -57,8 +57,8 @@ namespace sockets
 			{
 				if ((ret = connect(mSockfd, ai->ai_addr, ai->ai_addrlen)))
 				{
-					log::warn << LOC() << "(" << mSockfd << ") Connection to " << ip << " failed [" << std::strerror(errno) << "]" << log::done;
-					log::debug << LOC() << "(" << mSockfd << ") Retrying in " << i << "..." << log::done;
+					logs::warn << LOC() << "(" << mSockfd << ") Connection to " << ip << " failed [" << std::strerror(errno) << "]" << logs::done;
+					logs::debug << LOC() << "(" << mSockfd << ") Retrying in " << i << "..." << logs::done;
 					std::this_thread::sleep_for(std::chrono::milliseconds(1000*i));
 				}
 				else break;
@@ -67,12 +67,12 @@ namespace sockets
 		}
 		if ( ai == NULL ) 
 		{
-			log::error << LOC() << "(" << mSockfd << ") Could not connect to host: " << mHost << log::done;
+			logs::error << LOC() << "(" << mSockfd << ") Could not connect to host: " << mHost << logs::done;
 			throw std::runtime_error(LOC() "Connection failed");
 		}
 		else
 		{
-			log::info << LOC() << "(" << mSockfd << ") Connected to " << mHost << "!" << log::done;
+			logs::info << LOC() << "(" << mSockfd << ") Connected to " << mHost << "!" << logs::done;
 			mConnected = true;
 		}
 	}
@@ -87,7 +87,7 @@ namespace sockets
 		mSockfd = ::socket(AF_INET, SOCK_STREAM, 0);
 		if (mSockfd < 0) 
 		{
-			log::error << LOC() << "(" << mSockfd << ") Failed opening socket" << log::done;
+			logs::error << LOC() << "(" << mSockfd << ") Failed opening socket" << logs::done;
 			return;
 		}
 
@@ -101,8 +101,8 @@ namespace sockets
 		{
 			if ((ret = bind(mSockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0))
 			{
-				log::error << LOC() << "(" << mSockfd << ") Failed to bind socket [" << std::strerror(errno) << "]" << log::done;
-				log::debug << LOC() << "(" << mSockfd << ") Retrying in " << i << "..." << log::done;
+				logs::error << LOC() << "(" << mSockfd << ") Failed to bind socket [" << std::strerror(errno) << "]" << logs::done;
+				logs::debug << LOC() << "(" << mSockfd << ") Retrying in " << i << "..." << logs::done;
 				std::this_thread::sleep_for(std::chrono::milliseconds(1000*i));
 			}
 			else break;
@@ -120,7 +120,7 @@ namespace sockets
 
 	void socket::listen()
 	{
-		log::debug << LOC() << "Socket listening" << log::done;
+		logs::debug << LOC() << "Socket listening" << logs::done;
 		int sockfd;
 		socklen_t clilen;
 		struct sockaddr_in cli_addr;
@@ -130,13 +130,13 @@ namespace sockets
 		sockfd = accept(mSockfd, (struct sockaddr *) &cli_addr, &clilen);
 		if (sockfd < 0) 
 		{
-			log::error << LOC() << "(" << sockfd << ") Failed to accept connection on socket" << log::done;
+			logs::error << LOC() << "(" << sockfd << ") Failed to accept connection on socket" << logs::done;
 			return;
 		}
 		else
 		{
 			inet_ntop(AF_INET, &cli_addr, buffer, clilen);
-			log::info << LOC() << "(" << sockfd << ") Accepted connection: " << buffer << log::done;
+			logs::info << LOC() << "(" << sockfd << ") Accepted connection: " << buffer << logs::done;
 			socket sock(sockfd);
 			mSocks.push(sock);
 			listen();
@@ -148,7 +148,7 @@ namespace sockets
 		std::lock_guard<std::recursive_mutex> guard(mLock);
 		mOutBuf << pFmt;
 		std::string logLine = mOutBuf.str();
-		log::info << "-<- " << logLine << log::done;
+		logs::info << "-<- " << logLine << logs::done;
 		mOutBuf << "\r\n";
 		std::string line = mOutBuf.str();
 		ssize_t len = line.size();
@@ -159,7 +159,7 @@ namespace sockets
 		{
 			if (len - diff < 0)
 			{
-				log::warn << "Disconnected" << log::done;
+				logs::warn << "Disconnected" << logs::done;
 				mConnected = false;
 				return;
 			}
@@ -176,16 +176,16 @@ namespace sockets
 		std::lock_guard<std::recursive_mutex> guard(mLock);
 		std::vector<std::string> lines;
 
-        log::debug << LOC() << "(" << mSockfd << ") Starting Recv" << log::done;
+        logs::debug << LOC() << "(" << mSockfd << ") Starting Recv" << logs::done;
 		char data[IRC_MAXBUF] = {0};
 		ssize_t carry = strlen(mInBuf);
 		strcpy(data, mInBuf);
 		memset(mInBuf, 0, IRC_MAXLINE);
 		ssize_t len = ::recv(mSockfd, data+carry, IRC_MAXBUF-carry-1, false);
-        log::debug << LOC() << "(" << mSockfd << ") Recv got " << len << " bytes" << log::done;
+        logs::debug << LOC() << "(" << mSockfd << ") Recv got " << len << " bytes" << logs::done;
 		if (len <= 0)
 		{
-			log::warn << LOC() << "(" << mSockfd << ") Disconnected" << log::done;
+			logs::warn << LOC() << "(" << mSockfd << ") Disconnected" << logs::done;
 			mConnected = false;
 			return lines;
 		}
@@ -197,7 +197,7 @@ namespace sockets
 			if (end && end[1] == '\n')
 			{
 				std::string line(start, end-start);
-				log::info << "->- " << line << log::done;
+				logs::info << "->- " << line << logs::done;
 				lines.push_back(line);
 				start = end+2;
 			}

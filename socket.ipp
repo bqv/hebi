@@ -28,8 +28,8 @@ namespace sockets
 		}
 		if (*c == 0)
 		{
-			log::warn << LOC() << "Too many arguments given to irc::socket::send("
-				"\"" << pFmt << "\", \"" << pValue << "\", ...)" << log::done;
+			logs::warn << LOC() << "Too many arguments given to irc::socket::send("
+				"\"" << pFmt << "\", \"" << pValue << "\", ...)" << logs::done;
 		}
 	}
 }

@@ -1,6 +1,6 @@
 #include "logger.hpp"
 
-namespace log
+namespace logs
 {
     logger fatal = logger(std::cerr,    00, "FATAL");
     logger error = logger(std::cerr,    10, "ERROR");
