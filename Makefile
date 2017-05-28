@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=
+CFLAGS=-g
 CXX=clang++
 CXXFLAGS=-pthread -std=c++1y -g -Wall -Wextra -Wpedantic -Werror #-O2
 INCLUDES=-I /usr/lib/ghc/include/ -I /usr/include/python3.5m
@@ -101,4 +101,4 @@ plugin/python/plugin.o: plugin/python/plugin.c plugin/python/plugin.h
 		$(CC) $(INCLUDES) -c $< -o $@ $(CFLAGS)
 
 clean:
-		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o
+		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o */*/*.hi */*/*.c */*/*.h

@@ -9,6 +9,10 @@ namespace plugin
     {
         logs::debug << LOC() "Initializing Python" << logs::done;
         Py_Initialize();
+        PyRun_SimpleString(
+            "import sys\n"
+            "sys.path.append('./plugin/python/')\n"
+        );
     }
     
     void python::handle(irc::message pMsg)
@@ -26,5 +30,6 @@ namespace plugin
 
 void send_py(const char* pLine)
 {
-    plugin::python::send(std::string(pLine));
+    std::string s(pLine);
+    plugin::python::send(s);
 }

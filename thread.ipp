@@ -1,3 +1,5 @@
+#include <pthread.h>
+
 namespace thread
 {
     template<typename... Types>
@@ -7,6 +9,7 @@ namespace thread
         std::lock_guard<std::mutex> lock(mutex);
         std::thread thread(pArgs...);
         names[thread.get_id()] = pName;
+        pthread_setname_np(thread.native_handle(), pName.c_str());
         return thread;
     }
 
@@ -17,6 +20,7 @@ namespace thread
         std::lock_guard<std::mutex> lock(mutex);
         std::thread *thread = new std::thread(pArgs...);
         names[thread->get_id()] = pName;
+        pthread_setname_np(thread->native_handle(), pName.c_str());
         return thread;
     }
 }

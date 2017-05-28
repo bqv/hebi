@@ -33,5 +33,6 @@ namespace plugin
 
 void send_hs(const char* pLine)
 {
-    plugin::haskell::send(std::string(pLine));
+    std::string s(pLine);
+    plugin::haskell::send(s);
 }

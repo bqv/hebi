@@ -16,6 +16,10 @@
 # Haskell interface files
 *.hi
 
+# Python generated code
+*.c
+*.h
+
 # Fortran module files
 *.mod
 

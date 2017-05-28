@@ -19,7 +19,8 @@ handle :: Message -> IO ()
 handle (Message _ Invite params) = let
                                     (Short name (Long chans)) = params
                                    in
-                                    send ("JOIN"++(T.unpack chans))
+                                    putStrLn "In Haskell" >>
+                                    send ("JOIN "++(T.unpack chans))
 handle _ = return ()
 
 handle_hs :: CString -> IO ()
