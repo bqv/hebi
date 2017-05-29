@@ -12,7 +12,7 @@ namespace hydra
     void session::connect(const std::string pHost, unsigned short pPort)
     {
         mSock = sockets::socket(pHost.c_str(), pPort);
-		mClients.push_back(client(mSock, this));
+		mClients.emplace_back(mSock, this);
     }
 
     void session::listen()
@@ -25,7 +25,7 @@ namespace hydra
             logs::debug << LOC() << "Waiting for socket" << logs::done;
 			sockets::socket sock = mSock.get();
             logs::debug << LOC() << "Creating server..." << logs::done;
-			mServers.push_back(server(sock, this));
+			mServers.emplace_back(sock, this);
 		}
     }
 

@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
             }
         }
-        std::shared_ptr<irc::connection> connPtr(new irc::connection(host, port));
         std::shared_ptr<hydra::session> sessPtr(new hydra::session(HYDRA_PORT));
+        std::shared_ptr<irc::connection> connPtr(new irc::connection(host, port));
         std::shared_ptr<plugin::manager> mngrPtr(new plugin::manager(connPtr, &argc, &argv));
 
         work(connPtr, sessPtr, mngrPtr);

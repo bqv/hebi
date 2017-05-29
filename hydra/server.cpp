@@ -3,9 +3,8 @@
 namespace hydra
 {
     server::server(sockets::socket pSock, session *pSess)
-        : node(pSock), mSess(pSess)
+        : node(pSock), mSess(pSess), mThreadPtr(thread::make_thread_ptr("hydra::server::run", &server::run, this))
     {
-        mThreadPtr = std::shared_ptr<std::thread>(thread::make_thread_ptr("hydra::server::run", &server::run, this));
 		mThreadPtr->detach();
     }
 

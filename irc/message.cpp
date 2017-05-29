@@ -140,7 +140,7 @@ namespace irc
     {
         if (mHostmask)
         {
-            free(mHostmask);
+            delete mHostmask;
         }
     }
 

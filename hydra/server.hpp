@@ -19,7 +19,7 @@ namespace hydra
 	class server : private node
 	{
 	  private:
-        session *mSess;
+        std::shared_ptr<session> mSess;
 		std::shared_ptr<std::thread> mThreadPtr;
 
 	  public:

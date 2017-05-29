@@ -102,3 +102,6 @@ plugin/python/plugin.o: plugin/python/plugin.c plugin/python/plugin.h
 
 clean:
 		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o */*/*.hi */*/*.c */*/*.h
+
+valgrind:
+		valgrind --track-origins=yes --leak-check=full --vgdb-error=0 --suppressions=valgrind-python.supp ./hebi irc.freenode.net
