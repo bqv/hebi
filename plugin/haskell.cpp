@@ -27,6 +27,7 @@ namespace plugin
 
     haskell::~haskell()
     {
+        logs::debug << LOC() "Shutting Down Haskell" << logs::done;
         hs_exit();
     }
 }

@@ -13,7 +13,7 @@ namespace plugin
             "import sys\n"
             "sys.path.append('./plugin/python/')\n"
         );
-        initplugin();
+        //initplugin();
     }
     
     void python::handle(irc::message pMsg)
@@ -25,6 +25,7 @@ namespace plugin
 
     python::~python()
     {
+        logs::debug << LOC() "Shutting Down Python" << logs::done;
         Py_Finalize();
     }
 }
