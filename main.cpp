@@ -8,6 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "irc/connection.hpp"
+#include "irc/message.hpp"
 #include "hydra/session.hpp"
 #include "plugin/manager.hpp"
 #include "thread.hpp"
@@ -15,6 +16,7 @@
 
 #include <iostream>
 #include <thread>
+#include <vector>
 #include <memory>
 
 void work(std::shared_ptr<irc::connection> pConn, std::shared_ptr<hydra::session> pSess, std::shared_ptr<plugin::manager> pMngr)
@@ -23,9 +25,13 @@ void work(std::shared_ptr<irc::connection> pConn, std::shared_ptr<hydra::session
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     pSess->connect(std::string("localhost"), HYDRA_PORT);
 
-    while (pConn->running() || true)
+    while (pConn->running())
     {
-		pMngr->handle(pConn->get());
+        std::vector<irc::message> lines = pConn->get();
+        for (irc::message msg : lines)
+        {
+            pMngr->handle(msg);
+        }
     }
 }
 

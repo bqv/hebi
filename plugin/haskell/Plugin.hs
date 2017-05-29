@@ -21,7 +21,9 @@ handle (Message _ Invite params) = let
                                    in
                                     putStrLn "In Haskell" >>
                                     send ("JOIN "++(T.unpack chans))
-handle _ = return ()
+handle msg = putStrLn "In Haskell" >>
+             putStrLn ("HS:"++(show msg)) >>
+             send ("PRIVMSG ##doge :haskell")
 
 handle_hs :: CString -> IO ()
 handle_hs cs = peekCString cs >>= handle . read

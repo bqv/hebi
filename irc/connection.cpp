@@ -57,9 +57,14 @@ namespace irc
         mRunning = false;
     }
 
-    message connection::get()
+    std::vector<message> connection::get()
     {
-        return mQueue.pop();
+        std::vector<message> lines;
+        while (mQueue.notEmpty())
+        {
+            lines.push_back(mQueue.pop());
+        }
+        return lines;
     }
 
     bool connection::running()

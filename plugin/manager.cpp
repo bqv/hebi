@@ -5,9 +5,8 @@ namespace plugin
     manager::manager(std::shared_ptr<irc::connection> pConn, int *pArgc, char ***pArgv)
         : mConn(pConn)
     {
-        *pArgc = ***pArgv;
-        /*haskell *hs = new haskell(this, pArgc, pArgv);
-        mPlugins.push_back(std::shared_ptr<plugin>(hs));*/
+        haskell *hs = new haskell(this, pArgc, pArgv);
+        mPlugins.push_back(std::shared_ptr<plugin>(hs));
         python *py = new python(this);
         mPlugins.push_back(std::shared_ptr<plugin>(py));
     }

@@ -12,4 +12,5 @@ def send(line):
 
 def handle(line):
     print("In Python")
+    print("PY:"+line)
     send("PRIVMSG ##doge :python")

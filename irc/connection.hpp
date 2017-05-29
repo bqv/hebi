@@ -36,7 +36,7 @@ namespace irc
 
         void start();
         void stop();
-        message get();
+        std::vector<message> get();
         bool running();
 
         bool nick(std::string pNick);
