@@ -13,7 +13,7 @@ namespace plugin
             "import sys\n"
             "sys.path.append('./plugin/python/')\n"
         );
-        //initplugin();
+        PyInit_plugin();
     }
     
     void python::handle(irc::message pMsg)

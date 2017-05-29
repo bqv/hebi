@@ -1,14 +1,15 @@
-import Handler
-
 cdef extern from "../python.hpp":
     void send_py(const char *line)
 
-def send(line):
-    cdef char* c_line = line
-    send_py(c_line)
-
-h = Handler(send)
-
 cdef public void handle_py(const char *line):
     p_line = line
-    h.handle(p_line)
+    handle(p_line.decode('utf-8'))
+
+def send(line):
+    p_line = line.encode('utf-8')
+    cdef char* c_line = p_line
+    send_py(c_line)
+
+def handle(line):
+    print("In Python")
+    send("PRIVMSG ##doge :python")
