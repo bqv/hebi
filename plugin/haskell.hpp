@@ -22,6 +22,7 @@ namespace plugin
 extern "C"
 {
     void send_hs(const char* pLine);
+    void log_debug_hs(const char* pLine);
 }
 
 #endif /*PLUGIN_HASKELL_HPP*/

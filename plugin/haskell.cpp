@@ -9,7 +9,7 @@ extern void __stginit_Safe(void);
 namespace plugin
 {
     haskell::haskell(manager *pManager, int *pArgc, char ***pArgv)
-        : plugin(pManager)
+        : plugin(pManager, "plugin::haskell")
     {
         logs::debug << LOC() "Initializing Haskell" << logs::done;
         hs_init(pArgc, pArgv);
@@ -36,4 +36,9 @@ void send_hs(const char* pLine)
 {
     std::string s(pLine);
     plugin::haskell::send(s);
+}
+
+void log_debug_hs(const char* pLine)
+{
+    logs::debug << pLine << logs::done;
 }

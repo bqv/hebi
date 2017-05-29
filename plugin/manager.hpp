@@ -2,6 +2,7 @@
 #define _PLUGIN_MANAGER_HPP_
 
 #include <vector>
+#include <thread>
 
 #include "../irc/connection.hpp"
 #include "../irc/message.hpp"
@@ -17,6 +18,8 @@ namespace plugin
       private:
         std::shared_ptr<irc::connection> mConn;
         std::vector<std::shared_ptr<plugin>> mPlugins;
+
+        static void dispatch(std::shared_ptr<plugin> pPlg, irc::message pMsg);
 
       public:
         manager(std::shared_ptr<irc::connection> pConn, int *pArgc, char ***pArgv);

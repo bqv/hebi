@@ -2,7 +2,8 @@
 
 namespace plugin
 {
-    plugin::plugin(manager *pManager)
+    plugin::plugin(manager *pManager, const char* pName)
+        : name(pName)
     {
         mManager = pManager;
     }

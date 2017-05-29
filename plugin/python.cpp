@@ -5,7 +5,7 @@
 namespace plugin
 {
     python::python(manager *pManager)
-        : plugin(pManager)
+        : plugin(pManager, "plugin::python")
     {
         logs::debug << LOC() "Initializing Python" << logs::done;
         Py_Initialize();
@@ -34,4 +34,9 @@ void send_py(const char* pLine)
 {
     std::string s(pLine);
     plugin::python::send(s);
+}
+    
+void log_debug_py(const char* pLine)
+{
+    logs::debug << pLine << logs::done;
 }

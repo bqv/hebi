@@ -9,20 +9,26 @@ import Foreign.C.String
 import Foreign.Marshal.Alloc
 
 foreign import ccall send_hs :: CString -> IO ()
+foreign import ccall log_debug_hs :: CString -> IO ()
 
 send :: String -> IO ()
 send s = newCString s >>= \cs ->
             send_hs cs >>
             free cs
 
+log_debug :: String -> IO ()
+log_debug s = newCString s >>= \cs ->
+                send_hs cs >>
+                free cs
+
 handle :: Message -> IO ()
 handle (Message _ Invite params) = let
                                     (Short name (Long chans)) = params
                                    in
-                                    putStrLn "In Haskell" >>
+                                    log_debug "In Haskell" >>
                                     send ("JOIN "++(T.unpack chans))
-handle msg = putStrLn "In Haskell" >>
-             putStrLn ("HS:"++(show msg)) >>
+handle msg = log_debug "In Haskell" >>
+             log_debug ("HS:"++(show msg)) >>
              send ("PRIVMSG ##doge :haskell")
 
 handle_hs :: CString -> IO ()
