@@ -32,7 +32,7 @@ namespace irc
         };
 
       private:
-        hostmask* mHostmask;
+        hostmask mHostmask;
         command mCommand;
         std::string mCommand_str;
         int mNumeric;
@@ -44,9 +44,7 @@ namespace irc
 
       public:
         message(std::string line);
-        message(const message& obj);
         ~message();
-        message& operator=(const message& obj);
         bool isPing();
         std::string all_params();
 		std::string serialize() const;

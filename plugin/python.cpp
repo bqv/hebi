@@ -7,6 +7,10 @@ namespace plugin
     python::python(manager *pManager)
         : plugin(pManager, "plugin::python")
     {
+    }
+
+    void python::run()
+    {
         logs::debug << LOC() "Initializing Python" << logs::done;
         Py_Initialize();
         PyRun_SimpleString(
@@ -14,6 +18,7 @@ namespace plugin
             "sys.path.append('./plugin/python/')\n"
         );
         PyInit_plugin();
+        run_py(pipe.fd());
     }
     
     void python::handle(irc::message pMsg)
@@ -39,4 +44,25 @@ void send_py(const char* pLine)
 void log_debug_py(const char* pLine)
 {
     logs::debug << pLine << logs::done;
+}
+
+void log_info_py(const char* pLine)
+{
+    logs::info << pLine << logs::done;
+}
+
+void log_warn_py(const char* pLine)
+{
+    logs::warn << pLine << logs::done;
+}
+
+void log_error_py(const char* pLine)
+{
+    logs::error << pLine << logs::done;
+}
+
+void log_fatal_py(const char* pLine)
+{
+    logs::fatal << pLine << logs::done;
+    exit(-1);
 }

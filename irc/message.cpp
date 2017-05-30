@@ -20,10 +20,6 @@ namespace irc
             iss >> hostmask;
             parseHostmask(hostmask);
         }
-        else
-        {
-            mHostmask = NULL;
-        }
 
         std::string command;
         iss >> command;
@@ -55,25 +51,22 @@ namespace irc
         std::istringstream iss(pHostmask);
         char word[512];
 
-        mHostmask = new hostmask;
         iss.get(word, 512, '!');
         if (iss.peek() == std::char_traits<char>::eof())
         {
-            mHostmask->nick = std::string();
-            mHostmask->user = std::string();
-            mHostmask->host = std::string(word);
+            mHostmask.host = std::string(word);
         }
         else
         {
             char delim;
 
-            mHostmask->nick = std::string(word);
+            mHostmask.nick = std::string(word);
             iss >> delim;
             iss.get(word, 512, '@');
-            mHostmask->user = std::string(word);
+            mHostmask.user = std::string(word);
             iss >> delim;
             iss.getline(word, 512);
-            mHostmask->host = std::string(word);
+            mHostmask.host = std::string(word);
         }
     }
 
@@ -100,48 +93,8 @@ namespace irc
         mCommand_str = pCommand;
     }
 
-    message::message(const message& obj)
-    {
-        if (obj.mHostmask)
-        {
-            mHostmask = new hostmask;
-            mHostmask->nick = obj.mHostmask->nick;
-            mHostmask->user = obj.mHostmask->user;
-            mHostmask->host = obj.mHostmask->host;
-        }
-        mCommand = obj.mCommand;
-        mCommand_str = obj.mCommand_str;
-        mNumeric = obj.mNumeric;
-        mParams = obj.mParams;
-        mTrailing = obj.mTrailing;
-    }
-
-    message& message::operator=(const message& obj)
-    {
-        if (this != &obj)
-        {
-            if (obj.mHostmask)
-            {
-                mHostmask = new hostmask;
-                mHostmask->nick = obj.mHostmask->nick;
-                mHostmask->user = obj.mHostmask->user;
-                mHostmask->host = obj.mHostmask->host;
-            }
-            mCommand = obj.mCommand;
-            mCommand_str = obj.mCommand_str;
-            mNumeric = obj.mNumeric;
-            mParams = obj.mParams;
-            mTrailing = obj.mTrailing;
-        }
-        return *this;
-    }
-
     message::~message()
     {
-        if (mHostmask)
-        {
-            delete mHostmask;
-        }
     }
 
     bool message::isPing()
@@ -168,14 +121,17 @@ namespace irc
     std::string message::serialize() const
     {
         std::ostringstream oss;
-		if (mHostmask)
+		if (!mHostmask.host.empty())
 		{
 			oss << ':';
-			oss << mHostmask->nick;
-			oss << '!';
-			oss << mHostmask->user;
-			oss << '@';
-			oss << mHostmask->host;
+            if (!mHostmask.nick.empty())
+            {
+                oss << mHostmask.nick;
+                oss << '!';
+                oss << mHostmask.user;
+                oss << '@';
+            }
+			oss << mHostmask.host;
 			oss << ' ';
 		}
         oss << mCommand_str;

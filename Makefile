@@ -4,7 +4,7 @@ CXX=clang++
 CXXFLAGS=-pthread -std=c++1y -g -Wall -Wextra -Wpedantic -Werror #-O2
 INCLUDES=-I /usr/lib/ghc/include/ -I /usr/include/python3.5m
 LDFLAGS=-lstdc++ -lpthread
-LIBRARIES=-lstdc++ -lpython3.5m -package text
+LIBRARIES=-lstdc++ -lpython3.5m -package text -package directory
 GHC=ghc
 GHCOPTS=-XForeignFunctionInterface -optl-pthread
 CYTHON=cython
@@ -14,6 +14,7 @@ OBJECTS= \
  socket.o \
  queue.o \
  thread.o \
+ pipe.o \
  irc/connection.o \
  irc/message.o \
  hydra/message.o \
@@ -48,6 +49,9 @@ socket.o: socket.cpp socket.hpp config.hpp logger.hpp queue.hpp
 
 queue.hpp: queue.ipp
 queue.o: queue.cpp queue.hpp logger.hpp
+		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
+
+pipe.o: pipe.cpp pipe.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
 thread.hpp: thread.ipp
