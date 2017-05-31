@@ -108,4 +108,4 @@ clean:
 		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o */*/*.hi */*/*.c */*/*.h
 
 valgrind:
-		valgrind --track-origins=yes --leak-check=full --vgdb-error=0 --suppressions=valgrind-python.supp ./hebi irc.freenode.net
+		valgrind --track-origins=yes --leak-check=full --vgdb-error=0 ./hebi irc.freenode.net
