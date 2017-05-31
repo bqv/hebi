@@ -60,6 +60,7 @@ namespace irc
     std::vector<message> connection::get()
     {
         std::vector<message> lines;
+        lines.push_back(mQueue.pop());
         while (mQueue.notEmpty())
         {
             lines.push_back(mQueue.pop());

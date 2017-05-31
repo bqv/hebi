@@ -17,18 +17,12 @@ namespace plugin
         ~python();
  
         void run() override;
-        void handle(irc::message pMsg) override;
     };
 }
 
 extern "C" {
 #endif
     void send_py(const char* pLine);
-    void log_debug_py(const char* pLine);
-    void log_info_py(const char* pLine);
-    void log_warn_py(const char* pLine);
-    void log_error_py(const char* pLine);
-    void log_fatal_py(const char* pLine);
 #ifdef __cplusplus
 }
 #endif

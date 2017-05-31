@@ -18,18 +18,12 @@ namespace plugin
         ~haskell();
 
         void run() override;
-        void handle(irc::message pMsg) override;
     };
 }
 
 extern "C"
 {
     void send_hs(const char* pLine);
-    void log_debug_hs(const char* pLine);
-    void log_info_hs(const char* pLine);
-    void log_warn_hs(const char* pLine);
-    void log_error_hs(const char* pLine);
-    void log_fatal_hs(const char* pLine);
 }
 
 #endif /*PLUGIN_HASKELL_HPP*/

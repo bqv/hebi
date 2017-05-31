@@ -2,6 +2,8 @@
 #define _PIPE_HPP_
 
 #include <string>
+#include <cerrno>
+#include <cstring>
 #include <unistd.h>
 #include "logger.hpp"
 

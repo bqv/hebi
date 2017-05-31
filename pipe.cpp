@@ -24,11 +24,11 @@ namespace pipes
     std::string pipe::read()
     {
         char buffer[4096];
-        int len = ::read(mPipefd, buffer, 4096);
+        ssize_t len = ::read(mPipefd, buffer, 4096);
         if (len < 0)
         {
-            logs::warn << LOC() << "Error reading from pipe" << logs::done;
-            return std::string();
+            logs::fatal << LOC() << "(" << mPipefd << ") Error reading from pipe [" << std::strerror(errno) << "]" << logs::done;
+            exit(-1);
         }
         else
         {
@@ -59,7 +59,6 @@ namespace pipes
 
     void pipe::write(std::string pData)
     {
-        std::string data = pData.append("\n");
-        ::write(mPipefd, data.c_str(), data.length());
+        ::write(mPipefd, pData.c_str(), pData.length());
     }
 }

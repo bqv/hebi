@@ -22,14 +22,7 @@ namespace plugin
 #ifdef __GLASGOW_HASKELL__
         hs_add_root(__stginit_Safe);
 #endif
-        run_hs(pipe.fd());
-    }
-    
-    void haskell::handle(irc::message pMsg)
-    {
-        logs::debug << LOC() "Running Haskell" << logs::done;
-        std::string line = pMsg.serialize();
-        handle_hs((HsPtr) line.c_str());
+        run_hs(data_pipe.fd(), log_pipe.fd());
     }
 
     haskell::~haskell()
@@ -45,28 +38,3 @@ void send_hs(const char* pLine)
     plugin::haskell::send(s);
 }
 
-void log_debug_hs(const char* pLine)
-{
-    logs::debug << pLine << logs::done;
-}
-
-void log_info_hs(const char* pLine)
-{
-    logs::info << pLine << logs::done;
-}
-
-void log_warn_hs(const char* pLine)
-{
-    logs::warn << pLine << logs::done;
-}
-
-void log_error_hs(const char* pLine)
-{
-    logs::error << pLine << logs::done;
-}
-
-void log_fatal_hs(const char* pLine)
-{
-    logs::fatal << pLine << logs::done;
-    exit(-1);
-}

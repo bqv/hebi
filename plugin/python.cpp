@@ -18,14 +18,7 @@ namespace plugin
             "sys.path.append('./plugin/python/')\n"
         );
         PyInit_plugin();
-        run_py(pipe.fd());
-    }
-    
-    void python::handle(irc::message pMsg)
-    {
-        logs::debug << LOC() "Running Python" << logs::done;
-        std::string line = pMsg.serialize();
-        handle_py(line.c_str());
+        run_py(data_pipe.fd(), log_pipe.fd());
     }
 
     python::~python()
@@ -39,30 +32,4 @@ void send_py(const char* pLine)
 {
     std::string s(pLine);
     plugin::python::send(s);
-}
-    
-void log_debug_py(const char* pLine)
-{
-    logs::debug << pLine << logs::done;
-}
-
-void log_info_py(const char* pLine)
-{
-    logs::info << pLine << logs::done;
-}
-
-void log_warn_py(const char* pLine)
-{
-    logs::warn << pLine << logs::done;
-}
-
-void log_error_py(const char* pLine)
-{
-    logs::error << pLine << logs::done;
-}
-
-void log_fatal_py(const char* pLine)
-{
-    logs::fatal << pLine << logs::done;
-    exit(-1);
 }

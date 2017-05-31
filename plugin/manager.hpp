@@ -27,6 +27,7 @@ namespace plugin
         ~manager();
 
         void startPlugin(plugin *pPlg, int *pArgc, char ***pArgv);
+        void watch(plugin *pPlg);
         void handle(irc::message pMsg);
         void send(irc::message pMsg);
     };

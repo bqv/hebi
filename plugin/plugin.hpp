@@ -18,12 +18,12 @@ namespace plugin
         virtual ~plugin();
 
         virtual void run() = 0;
-        virtual void handle(irc::message pMsg) = 0;
         static void send(std::string pLine);
         static void send(irc::message pMsg);
 
         const char* name;
-        pipes::pipe pipe;
+        pipes::pipe data_pipe;
+        pipes::pipe log_pipe;
     };
 }
 
