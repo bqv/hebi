@@ -11,6 +11,7 @@
 #include "../irc/message.hpp"
 #include "haskell.hpp"
 #include "python.hpp"
+#include "lisp.hpp"
 
 namespace plugin
 {

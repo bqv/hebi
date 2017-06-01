@@ -13,6 +13,14 @@ import Foreign.C.Types
 import Foreign.C.String
 import Foreign.Marshal.Alloc
 
+run_hs :: Fd -> Fd -> IO ()
+run_hs datafd logfd = runReaderT (log_debug $ "Working with FDs "++(show datafd)++","++(show logfd)) logfd >>
+                      forever (fdRead datafd 4096 >>= \(str, _) -> runReaderT (handle $ read str) logfd)
+        where
+            forever x = x >> forever x
+
+foreign export ccall run_hs :: Fd -> Fd -> IO ()
+
 handle :: Message -> ReaderT Fd IO ()
 handle (Message _ Invite params) = let
                                     (Short name (Long chans)) = params
@@ -58,11 +66,3 @@ log_fatal :: String -> ReaderT Fd IO ()
 log_fatal s = ask >>=
               liftIO . (flip fdWrite $ "+00 "++s) >>
               return ()
-
-run_hs :: Fd -> Fd -> IO ()
-run_hs datafd logfd = runReaderT (log_debug $ "Working with FDs "++(show datafd)++","++(show logfd)) logfd >>
-                      forever (fdRead datafd 4096 >>= \(str, _) -> runReaderT (handle $ read str) logfd)
-        where
-            forever x = x >> forever x
-
-foreign export ccall run_hs :: Fd -> Fd -> IO ()

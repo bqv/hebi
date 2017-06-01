@@ -23,6 +23,7 @@ namespace plugin
 extern "C" {
 #endif
     void send_py(const char* pLine);
+    void exit_py();
 #ifdef __cplusplus
 }
 #endif

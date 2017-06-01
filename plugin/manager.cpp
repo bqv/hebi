@@ -11,6 +11,9 @@ namespace plugin
         python *py = new python(this);
         startPlugin(py, pArgc, pArgv);
         mPlugins.push_back(std::shared_ptr<plugin>(py));
+        lisp *ls = new lisp(this, *pArgc, *pArgv);
+        startPlugin(ls, pArgc, pArgv);
+        mPlugins.push_back(std::shared_ptr<plugin>(ls));
     }
 
     void manager::startPlugin(plugin *pPlg, int *pArgc, char ***pArgv)
@@ -29,8 +32,8 @@ namespace plugin
         pid = fork();
         if (pid == 0)
         {
-            //logs::debug << "Closing file descriptor (" << pipes[1] << ")" << logs::done;
-            //close(pipes[1]);
+            close(pipes[1]);
+            close(pipes[2]);
             pPlg->data_pipe = pipes::pipe(pipes[0]);
             pPlg->log_pipe = pipes::pipe(pipes[3]);
             strncpy((*pArgv)[0], pPlg->name, strlen(**pArgv));
@@ -44,9 +47,9 @@ namespace plugin
             logs::error << LOC() << "Fork failed" << logs::done;
         }
         else
-        {
-            //logs::debug << "Closing file descriptor (" << pipes[1] << ")" << logs::done;
-            //close(pipes[0]);
+        {  
+            close(pipes[0]);
+            close(pipes[3]);
             pPlg->data_pipe = pipes::pipe(pipes[1]);
             pPlg->log_pipe = pipes::pipe(pipes[2]);
             std::thread thread = thread::make_thread(pPlg->name, &manager::watch, this, pPlg);

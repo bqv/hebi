@@ -1,0 +1,18 @@
+* Hebi
+** A node for the Hydra Decentraliced IRC Bot
+
+Hebi is an IRC bot that functions as per the Hydra protocol (see SPECIFICATION.md) and has plugins for scripts in many languages.
+
+To run the bot in C++ only mode, edit Makefile to remove the plugin compilation units, libraries, and includes, and comment out the plugin initializations in plugin/manager.cpp
+
+* Tasks
+** TODO Fix Hydra recieve bug
+** TODO Implement Hydra Induction protocol
+** TODO Implement Hydra Election protocol
+** TODO Implement Hydra Termtime protocol
+** DONE Rewrite plugin to use fork() and pipe()
+** TODO Write Core.hs script
+** DONE Add Guile/lisp Plugin
+** TODO Add JNI Plugin
+** TODO Fix haskell fdread not excepting EOF
+** TODO Fix lisp exception on run_ls

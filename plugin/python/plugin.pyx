@@ -4,13 +4,19 @@ log = 0
 
 cdef extern from "../python.hpp":
     void send_py(const char *line)
+    void exit_py()
 
 cdef public void run_py(int data_fd, int log_fd):
+    global log
     log_debug("Working with FDs "+str(data_fd)+","+str(log_fd))
-    fd = log_fd
+    log = log_fd
     while True:
-        line = os.read(data_fd, 4096)
-        handle(line.decode("utf-8", errors="ignore"))
+        try:
+            line = os.read(data_fd, 4096)
+            handle(line.decode("utf-8", errors="ignore"))
+        except BaseException as e:
+            log_debug("Got exception "+str(e)+", exiting...")
+            exit_py()
 
 def handle(line):
     log_debug("In Python")
@@ -24,7 +30,7 @@ def send(line):
     cdef char* c_line = p_line
     send_py(c_line)
 
-def log_debug(line):
+def log_debug(line): 
     data = "+40 "+line
     os.write(log, data.encode("utf-8"))
 

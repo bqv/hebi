@@ -2,9 +2,9 @@ CC=clang
 CFLAGS=-g
 CXX=clang++
 CXXFLAGS=-pthread -std=c++1y -g -Wall -Wextra -Wpedantic -Werror #-O2
-INCLUDES=-I /usr/lib/ghc/include/ -I /usr/include/python3.5m
+INCLUDES=-I /usr/lib/ghc/include -I /usr/include/python3.5m -I /usr/include/guile/2.0
 LDFLAGS=-lstdc++ -lpthread
-LIBRARIES=-lstdc++ -lpython3.5m -package text -package directory
+LIBRARIES=-lstdc++ -lpython3.5m -lguile-2.0 -package text -package directory
 GHC=ghc
 GHCOPTS=-XForeignFunctionInterface -optl-pthread
 CYTHON=cython
@@ -28,7 +28,8 @@ OBJECTS= \
  plugin/haskell/Plugin.o \
  plugin/haskell/Message.o \
  plugin/python.o \
- plugin/python/plugin.o
+ plugin/python/plugin.o \
+ plugin/lisp.o
 EXECUTABLE=hebi
 
 all: $(EXECUTABLE)
@@ -103,6 +104,9 @@ plugin/python/plugin.c plugin/python/plugin.h: plugin/python/plugin.pyx
 
 plugin/python/plugin.o: plugin/python/plugin.c plugin/python/plugin.h
 		$(CC) $(INCLUDES) -c $< -o $@ $(CFLAGS)
+
+plugin/lisp.o: plugin/lisp.cpp plugin/lisp.hpp plugin/plugin.cpp
+		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
 clean:
 		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o */*/*.hi */*/*.c */*/*.h

@@ -33,3 +33,8 @@ void send_py(const char* pLine)
     std::string s(pLine);
     plugin::python::send(s);
 }
+
+void exit_py()
+{
+    exit(0);
+}
