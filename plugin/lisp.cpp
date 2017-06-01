@@ -33,20 +33,42 @@ SCM send_ls(SCM pLine)
     return SCM_BOOL_T;
 }
 
+SCM read_ls(SCM pFd)
+{
+    char buffer[4096];
+    int fd = scm_to_int(pFd);
+    ::read(fd, buffer, 4096);
+    return scm_from_locale_string(buffer);
+}
+
+SCM write_ls(SCM pFd, SCM pData)
+{
+    char *data = scm_to_locale_string(pData);
+    int fd = scm_to_int(pFd);
+    ::write(fd, data, strlen(data));
+    return SCM_BOOL_T;
+}
+
 void inner(void *data, int argc, char **argv)
 {
-    SCM data_pipe_fd = scm_from_int(((int*) data)[0]);
-    SCM log_pipe_fd = scm_from_int(((int*) data)[1]);
+    //SCM data_pipe_fd = scm_from_int(((int*) data)[0]);
+    //SCM log_pipe_fd = scm_from_int(((int*) data)[1]);
     (void)argc;
     (void)argv;
     logs::debug << LOC() "Fixing load-path" << logs::done;
     scm_c_eval_string("(add-to-load-path \"./plugin/lisp/\")");
-    logs::debug << LOC() "Defining send" << logs::done;
+    logs::debug << LOC() "Defining functions" << logs::done;
     scm_c_define_gsubr("send_ls", 1, 0, 0, (scm_t_subr) &send_ls);
+    scm_c_define_gsubr("read_ls", 1, 0, 0, (scm_t_subr) &read_ls);
+    scm_c_define_gsubr("write_ls", 2, 0, 0, (scm_t_subr) &write_ls);
     logs::debug << LOC() "Importing plugin" << logs::done;
     scm_c_use_module("plugin");
-    logs::debug << LOC() "Looking up runcmd" << logs::done;
-    SCM run_ls = scm_c_lookup("run_ls");
+    //logs::debug << LOC() "Looking up entrypoint" << logs::done;
+    //SCM run_ls = scm_c_lookup("run_ls");
     logs::debug << LOC() "Running plugin" << logs::done;
-    scm_call_2(run_ls, data_pipe_fd, log_pipe_fd);
+    //scm_call_2(run_ls, data_pipe_fd, log_pipe_fd);
+    std::ostringstream oss;
+    oss << "(run_ls " << ((int*)data)[0] << ' ' << ((int*)data)[1] << " read_ls write_ls send_ls)";
+    std::string runcmd = oss.str();
+    scm_c_eval_string(runcmd.c_str());
 }

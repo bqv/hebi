@@ -15,4 +15,4 @@ To run the bot in C++ only mode, edit Makefile to remove the plugin compilation 
 **** DONE Add Guile/lisp Plugin
 **** TODO Add JNI Plugin
 **** TODO Fix haskell fdread not excepting EOF
-**** TODO Fix lisp exception on run_ls
+**** DONE Fix lisp exception on run_ls

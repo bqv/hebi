@@ -1,6 +1,8 @@
 #ifndef _PLUGIN_LISP_HPP_
 #define _PLUGIN_LISP_HPP_
 
+#include <sstream>
+
 #include "../irc/message.hpp"
 #include "../logger.hpp"
 #include "plugin.hpp"
