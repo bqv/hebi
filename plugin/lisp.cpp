@@ -37,7 +37,8 @@ SCM read_ls(SCM pFd)
 {
     char buffer[4096];
     int fd = scm_to_int(pFd);
-    ::read(fd, buffer, 4096);
+    ssize_t len = ::read(fd, buffer, 4096);
+    buffer[len] = '\0';
     return scm_from_locale_string(buffer);
 }
 
