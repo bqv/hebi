@@ -8,18 +8,73 @@ import Data.List
 import System.Posix.IO
 import System.Posix.Types
 import Control.Monad.Reader
+import Control.Concurrent
+import Data.Time.Clock
+import System.Exit
+import System.IO.Error
 
+import Foreign.Ptr
 import Foreign.C.Types
 import Foreign.C.String
+import Foreign.C.Error
 import Foreign.Marshal.Alloc
+
+import Debug.Trace
+
+foreign import ccall safe "read"
+    c_safe_read :: CInt -> Ptr CChar -> CSize -> IO CSize
+
+fdRead_ :: Fd -> ByteCount -> IO String
+fdRead_ fd nbytes = allocaBytes (fromIntegral nbytes) doRead
+        where
+            doRead :: Ptr CChar -> IO String
+            doRead buf = c_safe_read (fromIntegral fd) buf nbytes >>=
+                         handleLength buf . fromIntegral
+            handleLength :: Ptr CChar -> Int -> IO String
+            handleLength _ (-1) = throwErrno "fdRead_"
+            handleLength _   0  = ioError undefined
+            handleLength buf n  = fmap traceShowId $ peekCStringLen (buf, fromIntegral n)
+
 
 run_hs :: Fd -> Fd -> IO ()
 run_hs datafd logfd = runReaderT (log_debug $ "Working with FDs "++(show datafd)++","++(show logfd)) logfd >>
-                      forever (fdRead datafd 4096 >>= \(str, _) -> runReaderT (handle $ read str) logfd)
+                      newEmptyMVar >>= \pong ->
+                         forkIO (pingLoop pong) >>
+                         forever (fdRead_ datafd 4096 >>= \str ->
+                           let
+                             msg = read str
+                           in
+                             pongFilter pong msg $ runReaderT (handle msg) logfd)
         where
             forever x = x >> forever x
 
 foreign export ccall run_hs :: Fd -> Fd -> IO ()
+
+pingLoop :: MVar () -> IO ()
+pingLoop pong = threadDelay 5000000 >>
+                runReaderT (send "PING :haskell") 0 >>
+                getCurrentTime >>=
+                waitLoop
+        where
+            waitLoop :: UTCTime -> IO ()
+            waitLoop time = tryTakeMVar pong >>=
+                            doCheck time
+            doCheck :: UTCTime -> Maybe () -> IO ()
+            doCheck time (Just ()) = pingLoop pong
+            doCheck time (Nothing) = getCurrentTime >>=
+                                     return . flip diffUTCTime time >>=
+                                     checkPong . floor >>
+                                     pingLoop pong 
+                            
+            checkPong :: Int -> IO ()
+            checkPong x | x <= 240  = return ()
+                        | otherwise = exitFailure
+
+pongFilter :: MVar () -> Message -> IO () -> IO ()
+pongFilter pong msg cont = case command msg of
+                             Pong -> tryPutMVar pong () >>
+                                     return ()
+                             _ -> cont
 
 handle :: Message -> ReaderT Fd IO ()
 handle (Message _ Invite params) = let
