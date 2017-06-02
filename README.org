@@ -10,6 +10,4 @@ To run the bot in C++ only mode, edit Makefile to remove the plugin compilation 
 **** TODO Implement Hydra Induction protocol
 **** TODO Implement Hydra Election protocol
 **** TODO Implement Hydra Termtime protocol
-**** TODO Write Core.hs script
 **** TODO Add JNI Plugin
-**** DONE Fix haskell fdread not excepting EOF

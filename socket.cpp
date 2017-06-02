@@ -147,8 +147,11 @@ namespace sockets
 	{
 		std::lock_guard<std::recursive_mutex> guard(mLock);
 		mOutBuf << pFmt;
-		std::string logLine = mOutBuf.str();
-		logs::info << "-<- " << logLine << logs::done;
+        if (thread::get_current_name() != "main")
+        {
+            std::string logLine = mOutBuf.str();
+            logs::info << "-<- " << logLine << logs::done;
+        }
 		mOutBuf << "\r\n";
 		std::string line = mOutBuf.str();
 		ssize_t len = line.size();
@@ -159,7 +162,10 @@ namespace sockets
 		{
 			if (len - diff < 0)
 			{
-				logs::warn << "Disconnected" << logs::done;
+                if (thread::get_current_name() != "main")
+                {
+                    logs::warn << "Disconnected" << logs::done;
+                }
 				mConnected = false;
 				return;
 			}
