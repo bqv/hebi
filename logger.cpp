@@ -72,4 +72,4 @@ namespace logs
         pLogLine << std::endl;
         return pLogLine;
     }
-};
+}

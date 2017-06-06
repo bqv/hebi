@@ -156,6 +156,7 @@ namespace hydra
           case command::HELLO:
             return "HELLO";
           case command::UNDEFINED:
+          default:
             return mCommand_str.c_str();
         }
     }

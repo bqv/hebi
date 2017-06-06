@@ -26,4 +26,4 @@ namespace logs
         logLine << pValue;
         return pLogger;
     }
-};
+}

@@ -75,7 +75,7 @@ namespace logs
     extern log_line& endl(log_line& pLogLine);
 
     extern logger fatal, error, warn, info, debug;
-};
+}
 
 #include "thread.hpp"
 #include "logger.ipp"

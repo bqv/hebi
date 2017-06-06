@@ -9,15 +9,8 @@ class queue: private std::deque<T>
         }
 
         queue(const queue& pQueue)
+            : std::deque<T>(pQueue)
         {
-            while (notEmpty())
-            {
-                pop();
-            }
-            for (T item : pQueue)
-            {
-                push(item);
-            }
         }
 
         void push(T pItem)
