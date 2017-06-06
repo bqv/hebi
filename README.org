@@ -6,8 +6,6 @@ Hebi is an IRC bot that functions as per the Hydra protocol (see SPECIFICATION.m
 To run the bot in C++ only mode, edit Makefile to remove the plugin compilation units, libraries, and includes, and comment out the plugin initializations in plugin/manager.cpp
 
 *** Tasks
-***** DONE Fix Hydra recieve bug
-***** TODO Implement Hydra Induction protocol
 ***** TODO Implement Hydra Election protocol
 ***** TODO Implement Hydra Termtime protocol
 ***** TODO Add JNI Plugin

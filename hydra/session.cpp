@@ -3,7 +3,7 @@
 namespace hydra
 {
     session::session(unsigned short pPort)
-        : mSock(pPort), mNodeId(rand())
+        : mSock(pPort), mNodeId(rand()), mNodes({mNodeId})
     {
         mState = state::TERMTIME;
 		mListener = thread::make_thread("hydra::session::listen", &session::listen, this);

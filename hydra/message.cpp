@@ -12,6 +12,7 @@ namespace hydra
         }
 
         iss >> mCommand_str;
+        logs::debug << LOC() "Constructing Message: " << mCommand_str << logs::done;
 
         while (iss.peek() != std::char_traits<char>::eof())
         {

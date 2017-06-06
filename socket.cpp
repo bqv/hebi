@@ -185,7 +185,6 @@ namespace sockets
 
 	std::vector<std::string> socket::recv()
 	{
-		//std::lock_guard<std::recursive_mutex> guard(mLock);
 		std::vector<std::string> lines;
 
         logs::debug << LOC() << "(" << mSockfd << ") Starting Recv" << logs::done;
@@ -222,9 +221,8 @@ namespace sockets
 		return lines;
 	}
 
-	bool socket::connected()
+	bool socket::connected() const
 	{
-		std::lock_guard<std::recursive_mutex> guard(mLock);
 		return mConnected;
 	}
 

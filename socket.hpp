@@ -53,7 +53,7 @@ namespace sockets
 
 		void send(const char *pFmt);
 		std::vector<std::string> recv();
-		bool connected();
+		bool connected() const;
 		void close();
 		class socket get();
 	};
