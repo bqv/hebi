@@ -10,6 +10,7 @@ namespace sockets
 		char ip[INET6_ADDRSTRLEN];
 
 		std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
+        mSocks = std::make_shared<queue<socket>>();
 		mConnected = false;
 
 		auto logentry = logs::debug << LOC() << "Using host " << mHost << " with port " << mPort;
@@ -81,10 +82,14 @@ namespace sockets
 		: mPort(pPort)
 	{
 		struct sockaddr_in serv_addr;
+        int option = 1;
 
 		mConnected = false;
 
+        mSocks = std::make_shared<queue<socket>>();
+
 		mSockfd = ::socket(AF_INET, SOCK_STREAM, 0);
+        setsockopt(mSockfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 		if (mSockfd < 0) 
 		{
 			logs::error << LOC() << "(" << mSockfd << ") Failed opening socket" << logs::done;
@@ -114,8 +119,9 @@ namespace sockets
 
 	socket::socket(int pSockfd)
 		: mSockfd(pSockfd)
-	{
-		mConnected = true;
+	{	
+        mSocks = std::make_shared<queue<socket>>();
+        mConnected = true;
 	}
 
 	void socket::listen()
@@ -138,7 +144,7 @@ namespace sockets
 			inet_ntop(AF_INET, &cli_addr, buffer, clilen);
 			logs::info << LOC() << "(" << sockfd << ") Accepted connection: " << buffer << logs::done;
 			socket sock(sockfd);
-			mSocks.push(sock);
+			mSocks->push(sock);
 			listen();
 		}
 	}
@@ -179,7 +185,7 @@ namespace sockets
 
 	std::vector<std::string> socket::recv()
 	{
-		std::lock_guard<std::recursive_mutex> guard(mLock);
+		//std::lock_guard<std::recursive_mutex> guard(mLock);
 		std::vector<std::string> lines;
 
         logs::debug << LOC() << "(" << mSockfd << ") Starting Recv" << logs::done;
@@ -231,10 +237,10 @@ namespace sockets
 
 	socket socket::get()
 	{
-		return mSocks.pop();
+		return mSocks->pop();
 	}
 
-    bool socket::operator==(const socket& pSock)
+    bool socket::operator==(const socket& pSock) const
     {
         return mSockfd == pSock.mSockfd;
     }
@@ -249,6 +255,7 @@ namespace sockets
 			std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
             mAddrInfoPtr = NULL;
 			mOutBuf.str(pSock.mOutBuf.str());
+            mSocks = pSock.mSocks;
 			mConnected = true;
 		}
 		return *this;
@@ -262,6 +269,7 @@ namespace sockets
 		std::fill(mInBuf, mInBuf+sizeof(mInBuf), 0);
         mAddrInfoPtr = NULL;
 		mOutBuf.str(pSock.mOutBuf.str());
+        mSocks = pSock.mSocks;
 		mConnected = true;
 	}
 

@@ -21,7 +21,7 @@ OBJECTS= \
  hydra/session.o \
  hydra/server.o \
  hydra/client.o \
- hydra/node.o \
+ hydra/connection.o \
  plugin/manager.o \
  plugin/plugin.o \
  plugin/haskell.o \
@@ -71,13 +71,13 @@ hydra/message.o: hydra/message.cpp hydra/message.hpp config.hpp logger.hpp queue
 hydra/session.o: hydra/session.cpp hydra/session.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/message.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
-hydra/server.o: hydra/server.cpp hydra/server.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/node.hpp
+hydra/server.o: hydra/server.cpp hydra/server.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/connection.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
-hydra/client.o: hydra/client.cpp hydra/client.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/node.hpp
+hydra/client.o: hydra/client.cpp hydra/client.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/connection.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
-hydra/node.o: hydra/node.cpp hydra/node.hpp socket.hpp queue.hpp hydra/message.hpp
+hydra/connection.o: hydra/connection.cpp hydra/connection.hpp socket.hpp queue.hpp hydra/message.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
 plugin/manager.o: plugin/manager.cpp plugin/manager.hpp plugin/plugin.cpp irc/message.hpp
@@ -111,5 +111,5 @@ plugin/lisp.o: plugin/lisp.cpp plugin/lisp.hpp plugin/plugin.cpp
 clean:
 		$(RM) $(EXECUTABLE) *.o */*.o */*/*.o */*/*.hi */*/*.c */*/*.h
 
-valgrind:
+valgrind: $(EXECUTABLE)
 		valgrind --track-origins=yes --leak-check=full --vgdb-error=0 ./hebi irc.freenode.net

@@ -5,32 +5,29 @@
 #include <vector>
 #include <thread>
 #include <memory>
+#include <set>
 
 #include "../config.hpp"
 #include "../logger.hpp"
 #include "../socket.hpp"
 #include "../thread.hpp"
-#include "node.hpp"
+#include "message.hpp"
+#include "connection.hpp"
 
 namespace hydra
 {
-    class session;
-
-	class server : private node
+	class server : private connection
 	{
 	  private:
-        std::shared_ptr<session> mSess;
-		std::shared_ptr<std::thread> mThreadPtr;
+        std::uint32_t mClntId;
 
 	  public:
-		server(sockets::socket pSock, session *pSess);
+		server(sockets::socket& pSock, session *pSess);
 		~server();
         void run();
         void send(const message pMsg);
         bool operator==(const server& pSrv);
 	};
 }
-
-#include "session.hpp"
 
 #endif /*HYDRA_SERVER_HPP*/

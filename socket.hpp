@@ -34,8 +34,8 @@ namespace sockets
 		struct addrinfo *mAddrInfoPtr;
 		std::ostringstream mOutBuf;
 		char mInBuf[IRC_MAXLINE];
-		std::recursive_mutex mLock;
-		queue<socket> mSocks;
+        std::recursive_mutex mLock;
+        std::shared_ptr<queue<socket>> mSocks;
 		bool mConnected;
 
 	  public:
@@ -46,7 +46,7 @@ namespace sockets
 		socket& operator=(const socket& pSock);
 		~socket();
 
-        bool operator==(const socket& pSock);
+        bool operator==(const socket& pSock) const;
 		void listen();
 		template<typename T, typename... Types>
 		void send(const char *pFmt, T pValue, Types... pRest);

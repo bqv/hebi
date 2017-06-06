@@ -5,6 +5,7 @@ namespace irc
     connection::connection(const std::string pHost, unsigned short pPort)
         : mSock(pHost.c_str(), pPort)
     {
+        mRunning = false;
     }
 
     connection::~connection()

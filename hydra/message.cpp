@@ -11,29 +11,33 @@ namespace hydra
             throw std::invalid_argument(LOC() "Message is an empty string");
         }
 
-        std::string command;
-        iss >> command;
-        parseCommand(command);
+        iss >> mCommand_str;
 
         while (iss.peek() != std::char_traits<char>::eof())
         {
             std::string param;
             iss >> param;
-            mParams.push(param);
+            mParams.push_back(param);
         }
+        
+        parseCommand(mCommand_str);
     }
 
     message::message(command pCmd, const char* pCmd_str)
         : mCommand(pCmd), mCommand_str(pCmd_str)
     {
-        mDerived = std::shared_ptr<message>(this);
     }
 
-    message::message(const message& pMsg)
+    message message::operator=(const message& pMsg)
     {
-        mCommand = pMsg.mCommand;
-        mCommand_str = pMsg.mCommand_str;
-        mParams = pMsg.mParams;
+        if (this != &pMsg)
+        {
+            mCommand = pMsg.mCommand;
+            mCommand_str = pMsg.mCommand_str;
+            mParams = pMsg.mParams;
+            mDerived = pMsg.mDerived;
+        }
+        return *this;
     }
 
     void message::parseCommand(std::string pCommand)
@@ -108,9 +112,75 @@ namespace hydra
             mCommand = command::UNDEFINED;
             mDerived = NULL;
         }
-        mCommand_str = pCommand;
     }
 
+    const char* message::to_str(command pCmd) const
+    {
+        switch (pCmd)
+        {
+          case command::PING:
+            return "PING";
+          case command::PONG:
+            return "PONG";
+          case command::RECV:
+            return "RECV";
+          case command::SEND:
+            return "SEND";
+          case command::DROP:
+            return "DROP";
+          case command::NOMINATE:
+            return "NOMINATE";
+          case command::PLEDGE:
+            return "PLEDGE";
+          case command::CALL:
+            return "CALL";
+          case command::ELECT:
+            return "ELECT";
+          case command::KNOCK:
+            return "KNOCK";
+          case command::MEET:
+            return "MEET";
+          case command::WELCOME:
+            return "WELCOME";
+          case command::HELLO:
+            return "HELLO";
+          case command::UNDEFINED:
+            return mCommand_str.c_str();
+        }
+    }
+
+    bool message::operator==(const message& pMsg) const
+    {
+        return (mCommand == pMsg.mCommand)
+            && (mParams == pMsg.mParams);
+    }
+
+    bool message::is(command pCmd)
+    {
+        return pCmd == mCommand;
+    }
+    
+    std::string message::serialize() const
+    {
+        std::ostringstream oss;
+        oss << to_str(mCommand);
+        for (std::string param : mParams)
+        {
+            oss << ' ';
+            oss << param;
+        }
+        return oss.str();
+    }
+
+    message message::derived()
+    {
+        return *mDerived;
+    }
+
+    message::~message()
+    {
+    }    
+    
     ping::ping(const message& pMsg)
         : message(pMsg)
     {
@@ -119,7 +189,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> term;
@@ -142,7 +211,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> val;
@@ -165,7 +233,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> idx;
@@ -186,7 +253,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> id;
@@ -207,7 +273,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> id;
@@ -226,7 +291,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> term;
@@ -247,7 +311,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> term;
@@ -270,7 +333,6 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> term;
@@ -289,8 +351,7 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
-
+ 
         iss = std::istringstream(pMsg.mParams[0]);
         iss >> term;
         iss = std::istringstream(pMsg.mParams[1]);
@@ -312,14 +373,13 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
-
-        iss = std::istringstream(pMsg.mParams[0]);
-        iss >> id;
+ 
+        iss = std::istringstream(mParams[0]);
+        iss >> ind;
     }
 
-    knock::knock(std::uint32_t pId)
-        : message(message::command::KNOCK, "KNOCK", pId), id(pId)
+    knock::knock(std::uint32_t pInd)
+        : message(message::command::KNOCK, "KNOCK", pInd), ind(pInd)
     {
     }
 
@@ -331,16 +391,15 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
-
+ 
         iss = std::istringstream(pMsg.mParams[0]);
-        iss >> id;
+        iss >> ind;
         iss = std::istringstream(pMsg.mParams[1]);
-        iss >> med;
+        iss >> id;
     }
 
-    meet::meet(std::uint32_t pId, std::uint32_t pMed)
-        : message(message::command::MEET, "MEET", pId, pMed)
+    meet::meet(std::uint32_t pInd, std::uint32_t pId)
+        : message(message::command::MEET, "MEET", pInd, pId), ind(pInd), id(pId)
     {
     }
 
@@ -352,14 +411,13 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
 
         iss = std::istringstream(pMsg.mParams[0]);
-        iss >> id;
+        iss >> ind;
     }
 
-    welcome::welcome(std::uint32_t pId)
-        : message(message::command::WELCOME, "WELCOME", pId), id(pId)
+    welcome::welcome(std::uint32_t pInd)
+        : message(message::command::WELCOME, "WELCOME", pInd), ind(pInd)
     {
     }
 
@@ -371,54 +429,15 @@ namespace hydra
         mCommand = pMsg.mCommand;
         mCommand_str = pMsg.mCommand_str;
         mParams = pMsg.mParams;
-        mDerived = std::shared_ptr<message>(this);
-
+ 
         iss = std::istringstream(pMsg.mParams[0]);
+        iss >> ind;
+        iss = std::istringstream(pMsg.mParams[1]);
         iss >> id;
     }
 
-    hello::hello(std::uint32_t pId)
-        : message(message::command::HELLO, "HELLO", pId), id(pId)
-    {
-    }
-
-    bool message::is(command pCmd)
-    {
-        return pCmd == mCommand;
-    }
-
-    std::string message::get()
-    {
-        if (mParams.empty())
-        {
-            throw std::invalid_argument("Tried to get a nonexistent parameter");
-        }
-        return mParams.pop();
-    }
-    
-    std::string message::serialize() const
-    {
-        std::ostringstream oss;
-        oss << mCommand_str;
-        for (std::string param : mParams)
-        {
-            oss << ' ';
-            oss << param;
-        }
-        return oss.str();
-    }
-
-    bool message::operator==(const message& pMsg)
-    {
-        return (mCommand == pMsg.mCommand);
-    }
-
-    message message::derived()
-    {
-        return *mDerived;
-    }
-
-    message::~message()
+    hello::hello(std::uint32_t pInd, std::uint32_t pId)
+        : message(message::command::HELLO, "HELLO", pInd, pId), ind(pInd), id(pId)
     {
     }
 }

@@ -21,11 +21,11 @@
 
 void work(std::shared_ptr<irc::connection> pConn, std::shared_ptr<hydra::session> pSess, std::shared_ptr<plugin::manager> pMngr)
 {
-    pConn->start();
+    //pConn->start();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     pSess->connect(std::string("localhost"), HYDRA_PORT);
 
-    while (pConn->running())
+    while (pConn->running() || true)
     {
         std::vector<irc::message> lines = pConn->get();
         for (irc::message msg : lines)

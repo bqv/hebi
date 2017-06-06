@@ -64,20 +64,21 @@ namespace hydra
         message(command pCmd, const char* pCmd_str, T pValue, Types... pRest);
         message(command pCmd, const char* pCmd_str);
         message(std::string line);
-        message(const message& pMsg);
         ~message();
 
         bool is(command pCmd);
-        std::string get();
         std::string serialize() const;
         message derived();
-        virtual bool operator==(const message& pMsg);
+        bool operator==(const message& pMsg) const;
+        message operator=(const message& pMsg);
+        const char* to_str(command pCmd) const;
+
+        std::shared_ptr<message> mDerived;
 
       protected:
-        queue<std::string> mParams;
+        std::vector<std::string> mParams;
         command mCommand;
         std::string mCommand_str;
-        std::shared_ptr<message> mDerived;
 
       private:
         void parseCommand(std::string pCommand);
@@ -179,19 +180,19 @@ namespace hydra
     {
       public:
         knock(const message& pMsg);
-        knock(std::uint32_t pId);
+        knock(std::uint32_t pInd);
 
-        std::uint32_t id;
+        std::uint32_t ind;
     };
 
     class meet : public message
     {
       public:
         meet(const message& pMsg);
-        meet(std::uint32_t pId, std::uint32_t pMed);
+        meet(std::uint32_t pInd, std::uint32_t pId);
 
+        std::uint32_t ind;
         std::uint32_t id;
-        std::uint32_t med;
     };
 
     class welcome : public message
@@ -200,15 +201,16 @@ namespace hydra
         welcome(const message& pMsg);
         welcome(std::uint32_t pId);
 
-        std::uint32_t id;
+        std::uint32_t ind;
     };
 
     class hello : public message
     {
       public:
         hello(const message& pMsg);
-        hello(std::uint32_t pId);
+        hello(std::uint32_t pInd, std::uint32_t pId);
 
+        std::uint32_t ind;
         std::uint32_t id;
     };
 }

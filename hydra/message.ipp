@@ -5,7 +5,7 @@ namespace hydra
     {
         std::ostringstream oss;
         oss << pValue;
-        mParams.push(oss.str());
+        mParams.push_back(oss.str());
         message(pCmd, pCmd_str, pRest...);
     }
 }
