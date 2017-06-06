@@ -38,6 +38,17 @@ namespace hydra
                         mSess->broadcast(*this, knockMsg);
                         logs::debug << "Sending MEET" << logs::done;
                         mSock.send("MEET % %", mClntId, mSess->nodeId());
+                        meets.insert(mSess->nodeId());
+
+                        if (meets.size() == mSess->nodeCount())
+                        {
+                            welcome welcomeMsg(mClntId);
+                            logs::debug << "Sending welcome msg: " << welcomeMsg.serialize() << logs::done;
+                            mSess->broadcast(welcomeMsg);
+                            meets.clear();
+                            inducted = true;
+                            mSock.send("HELLO % %", mClntId, mSess->nodeId());
+                        }
                     }                    
                     else if (mClntId)
                     {

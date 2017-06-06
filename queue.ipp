@@ -67,7 +67,7 @@ class queue: private std::deque<T>
             return std::deque<T>::size();
         }
 
-        T first() const
+        T front() const
         {
             return std::deque<T>::operator[](0);
         }

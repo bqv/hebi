@@ -3,7 +3,7 @@
 
 #include <sstream>
 #include <string>
-#include <vector>
+#include <deque>
 #include <cstdint>
 
 #include "../config.hpp"
@@ -71,12 +71,13 @@ namespace hydra
         message derived();
         bool operator==(const message& pMsg) const;
         message operator=(const message& pMsg);
+        message(const message& pMsg);
         const char* to_str(command pCmd) const;
 
         std::shared_ptr<message> mDerived;
 
       protected:
-        std::vector<std::string> mParams;
+        std::deque<std::string> mParams;
         command mCommand;
         std::string mCommand_str;
 
