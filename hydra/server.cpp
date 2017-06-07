@@ -33,26 +33,24 @@ namespace hydra
                     {
                         knock knockMsg = static_cast<knock>(msg.derived());
                         mClntId = knockMsg.ind;
-                        logs::debug << "Setting Induction state" << logs::done;
                         mSess->setState(session::state::INDUCTION);
                         mSess->broadcast(*this, knockMsg);
-                        logs::debug << "Sending MEET" << logs::done;
                         mSock.send("MEET % %", mClntId, mSess->nodeId());
                         meets.insert(mSess->nodeId());
 
                         if (meets.size() == mSess->nodeCount())
                         {
                             welcome welcomeMsg(mClntId);
-                            logs::debug << "Sending welcome msg: " << welcomeMsg.serialize() << logs::done;
                             mSess->broadcast(welcomeMsg);
                             meets.clear();
+                            mSess->addNode(mClntId);
                             inducted = true;
                             mSock.send("HELLO % %", mClntId, mSess->nodeId());
                         }
+                        // TODO: Timeout 10s
                     }                    
                     else if (mClntId)
                     {
-                        // TODO: Timeout 10s 
                         if (msg.is(message::command::MEET))
                         {
                             meet meetMsg = static_cast<meet>(msg.derived());
@@ -66,6 +64,7 @@ namespace hydra
                                 welcome welcomeMsg(mClntId);
                                 mSess->broadcast(welcomeMsg);
                                 meets.clear();
+                                mSess->addNode(mClntId);
                                 inducted = true;
                                 mSock.send("HELLO % %", mClntId, mSess->nodeId());
                             }

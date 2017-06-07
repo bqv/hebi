@@ -17,9 +17,7 @@ namespace hydra
             {
                 try
                 {
-                    logs::debug << "Reading line: " << line << logs::done;
                     message msg = message(line);
-                    logs::debug << "Read message: " << msg.serialize() << logs::done;
                     mQueue.push(msg);
                 }
                 catch (const std::invalid_argument&)

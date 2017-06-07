@@ -13,6 +13,9 @@
 // irc/connection
 #define NICK "hebi"
 
+// hydra/session
+#define MAX_PING 10
+
 // main
 #define HYDRA_PORT 6174
 

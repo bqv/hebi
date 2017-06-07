@@ -237,6 +237,13 @@ namespace hydra
     {
     }
 
+    bool pong::operator==(const message& pMsg) const
+    {
+        return (mCommand == pMsg.mCommand)
+            && (mParams[0] == pMsg.mParams[0])
+            && (mParams[1] == pMsg.mParams[1]);
+    }
+
     recv::recv(const message& pMsg)
         : message(pMsg)
     {

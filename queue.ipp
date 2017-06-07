@@ -15,10 +15,10 @@ class queue: private std::deque<T>
 
         void push(T pItem)
 		{
-            logs::debug << LOC() << "Pushing" << logs::done;
+            //logs::debug << LOC() << "Pushing" << logs::done;
             std::unique_lock<std::mutex> lock(*mMutex);
             std::deque<T>::push_back(pItem);
-            logs::debug << LOC() << "Notifying " << &*mIsEmpty << logs::done;
+            //logs::debug << LOC() << "Notifying " << &*mIsEmpty << logs::done;
             mIsEmpty->notify_one();
         }
 
@@ -27,7 +27,7 @@ class queue: private std::deque<T>
             std::unique_lock<std::mutex> lock(*mMutex);
             while(std::deque<T>::empty())
             {
-                logs::debug << LOC() << "Waiting on " << &*mIsEmpty << logs::done;
+                //logs::debug << LOC() << "Waiting on " << &*mIsEmpty << logs::done;
                 mIsEmpty->wait(lock);
             }
             T value = std::move(std::deque<T>::front());

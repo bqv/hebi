@@ -23,7 +23,7 @@ void work(std::shared_ptr<irc::connection> pConn, std::shared_ptr<hydra::session
 {
     //pConn->start();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    pSess->connect(std::string("localhost"), HYDRA_PORT);
+    pSess->connect(std::string("localhost"), HYDRA_PORT+1);
 
     while (pConn->running() || true)
     {
@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
             }
         }
         std::shared_ptr<hydra::session> sessPtr(new hydra::session(HYDRA_PORT));
+        std::shared_ptr<hydra::session> sess2Ptr(new hydra::session(HYDRA_PORT+1));
         std::shared_ptr<irc::connection> connPtr(new irc::connection(host, port));
         std::shared_ptr<plugin::manager> mngrPtr(new plugin::manager(connPtr, &argc, &argv));
 

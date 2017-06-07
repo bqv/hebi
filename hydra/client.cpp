@@ -49,6 +49,7 @@ namespace hydra
             message msg = connection::read();
             if (mSess->seen(msg))
             {
+                logs::debug << "Ignoring seen message: " << msg.serialize() << logs::done;
                 continue;
             }
             else if (msg.is(message::command::DROP))

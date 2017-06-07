@@ -69,7 +69,7 @@ namespace hydra
         bool is(command pCmd);
         std::string serialize() const;
         message derived();
-        bool operator==(const message& pMsg) const;
+        virtual bool operator==(const message& pMsg) const;
         message operator=(const message& pMsg);
         message(const message& pMsg);
         const char* to_str(command pCmd) const;
@@ -101,6 +101,7 @@ namespace hydra
       public:
         pong(const message& pMsg);
         pong(std::string pVal, std::uint32_t pId, int pCount);
+        bool operator==(const message& pMsg) const override;
 
         std::string val;
         std::uint32_t id;
