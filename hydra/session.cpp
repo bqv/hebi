@@ -319,7 +319,16 @@ namespace hydra
 
     bool session::seen(message pMsg)
     {
-        if (std::find(mSeen.begin(), mSeen.end(), pMsg) == mSeen.end())
+        bool found = false;
+        for (const message msg : mSeen)
+        {
+            if (pMsg.derived() == msg)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
         {
             mSeen.push(pMsg);
             if (mSeen.size() > 512)

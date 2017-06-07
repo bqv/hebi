@@ -16,6 +16,9 @@
 // hydra/session
 #define MAX_PING 10
 
+// hydra/client, hydra/server
+#define MAX_MEET 10
+
 // main
 #define HYDRA_PORT 6174
 

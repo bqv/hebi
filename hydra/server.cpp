@@ -13,6 +13,7 @@ namespace hydra
         mRunning = true;
         bool inducted = false;
         std::set<std::uint32_t> meets;
+        std::time_t knockTime;
 
         logs::debug << LOC() "Starting server" << logs::done;
 
@@ -20,7 +21,7 @@ namespace hydra
         {
             message msg = connection::read();
 
-            if (mSess->seen(msg))
+            if (mSess->seen(msg.derived()))
             {
                 logs::debug << "Ignoring seen message: " << msg.serialize() << logs::done;
                 continue;
@@ -47,26 +48,34 @@ namespace hydra
                             inducted = true;
                             mSock.send("HELLO % %", mClntId, mSess->nodeId());
                         }
-                        // TODO: Timeout 10s
+                        knockTime = std::time(nullptr);
                     }                    
                     else if (mClntId)
                     {
                         if (msg.is(message::command::MEET))
-                        {
-                            meet meetMsg = static_cast<meet>(msg.derived());
-                            meets.insert(meetMsg.id);
-                            std::string string = msg.serialize();
-                            // No need to broadcast, we are the mediator
-                            mSock.send(string.c_str());
-                            
-                            if (meets.size() == mSess->nodeCount())
+                        { 
+                            std::time_t curTime = std::time(nullptr);
+                            if ((curTime - knockTime) > MAX_MEET)
                             {
-                                welcome welcomeMsg(mClntId);
-                                mSess->broadcast(welcomeMsg);
-                                meets.clear();
-                                mSess->addNode(mClntId);
-                                inducted = true;
-                                mSock.send("HELLO % %", mClntId, mSess->nodeId());
+                                mClntId = 0;
+                            }
+                            else
+                            {
+                                meet meetMsg = static_cast<meet>(msg.derived());
+                                meets.insert(meetMsg.id);
+                                std::string string = msg.serialize();
+                                // No need to broadcast, we are the mediator
+                                mSock.send(string.c_str());
+                                
+                                if (meets.size() == mSess->nodeCount())
+                                {
+                                    welcome welcomeMsg(mClntId);
+                                    mSess->broadcast(welcomeMsg);
+                                    meets.clear();
+                                    mSess->addNode(mClntId);
+                                    inducted = true;
+                                    mSock.send("HELLO % %", mClntId, mSess->nodeId());
+                                }
                             }
                         }
                         else

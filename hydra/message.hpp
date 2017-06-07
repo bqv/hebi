@@ -5,6 +5,7 @@
 #include <string>
 #include <deque>
 #include <cstdint>
+#include <typeinfo>
 
 #include "../config.hpp"
 #include "../logger.hpp"
@@ -64,7 +65,7 @@ namespace hydra
         message(command pCmd, const char* pCmd_str, T pValue, Types... pRest);
         message(command pCmd, const char* pCmd_str);
         message(std::string line);
-        ~message();
+        virtual ~message();
 
         bool is(command pCmd);
         std::string serialize() const;
@@ -183,6 +184,7 @@ namespace hydra
       public:
         knock(const message& pMsg);
         knock(std::uint32_t pInd);
+        bool operator==(const message& pMsg) const override;
 
         std::uint32_t ind;
     };

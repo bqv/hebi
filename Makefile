@@ -71,10 +71,10 @@ hydra/message.o: hydra/message.cpp hydra/message.hpp config.hpp logger.hpp queue
 hydra/session.o: hydra/session.cpp hydra/session.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/message.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
-hydra/server.o: hydra/server.cpp hydra/server.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/connection.hpp
+hydra/server.o: hydra/server.cpp hydra/server.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/connection.hpp hydra/message.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
-hydra/client.o: hydra/client.cpp hydra/client.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/connection.hpp
+hydra/client.o: hydra/client.cpp hydra/client.hpp config.hpp logger.hpp socket.hpp thread.hpp hydra/connection.hpp hydra/message.hpp
 		$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
 hydra/connection.o: hydra/connection.cpp hydra/connection.hpp socket.hpp queue.hpp hydra/message.hpp

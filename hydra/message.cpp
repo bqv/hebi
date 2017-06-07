@@ -409,6 +409,13 @@ namespace hydra
     {
     }
 
+    bool knock::operator==(const message& pMsg) const
+    {
+        logs::debug << "Comparing Knock" << logs::done;
+        (void)pMsg;
+        return false;
+    }
+
     meet::meet(const message& pMsg)
         : message(pMsg)
     {

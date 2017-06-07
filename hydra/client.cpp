@@ -12,6 +12,7 @@ namespace hydra
     {
         mRunning = true;
         bool welcomed = false;
+        std::time_t knockTime;
 
         logs::debug << LOC() "Starting client" << logs::done;
         
@@ -20,12 +21,22 @@ namespace hydra
             while(!welcomed)
             {
                 mSock.send("KNOCK % %", mSess->nodeId(), "Hebi");
+                knockTime = std::time(nullptr);
 
                 message msg = connection::read();
                 while (!msg.is(message::command::MEET))
                 {
+                    std::time_t curTime = std::time(nullptr);
+                    if ((curTime - knockTime) > MAX_MEET)
+                    {
+                        break;
+                    }
                     mSess->handle(msg);
                     msg = connection::read();
+                }
+                if (!msg.is(message::command::MEET))
+                {
+                    continue;
                 }
                 meet meetMsg = static_cast<meet>(msg.derived());
                 if (meetMsg.id == mSess->nodeId())
@@ -36,18 +47,26 @@ namespace hydra
                 msg = connection::read();
                 while (!msg.is(message::command::WELCOME))
                 {
+                    std::time_t curTime = std::time(nullptr);
+                    if ((curTime - knockTime) > MAX_MEET)
+                    {
+                        break;
+                    }
                     mSess->handle(msg);
                     msg = connection::read();
                 }
-                welcome welcomeMsg = static_cast<welcome>(msg.derived());
-                if (welcomeMsg.ind == mSess->nodeId())
+                if (msg.is(message::command::WELCOME))
                 {
-                    welcomed = true;
+                    welcome welcomeMsg = static_cast<welcome>(msg.derived());
+                    if (welcomeMsg.ind == mSess->nodeId())
+                    {
+                        welcomed = true;
+                    }
                 }
             }
 
             message msg = connection::read();
-            if (mSess->seen(msg))
+            if (mSess->seen(msg.derived()))
             {
                 logs::debug << "Ignoring seen message: " << msg.serialize() << logs::done;
                 continue;

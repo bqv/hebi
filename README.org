@@ -9,3 +9,4 @@ To run the bot in C++ only mode, edit Makefile to remove the plugin compilation 
 ***** TODO Add JNI Plugin
 ***** TODO Use getopt for argument parsing
 ***** TODO Make console interactive
+***** TODO Connect Hydra subsystem to IRC
