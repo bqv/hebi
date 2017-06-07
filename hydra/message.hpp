@@ -69,7 +69,7 @@ namespace hydra
 
         bool is(command pCmd);
         std::string serialize() const;
-        message derived();
+        message derived() const;
         virtual bool operator==(const message& pMsg) const;
         message operator=(const message& pMsg);
         message(const message& pMsg);

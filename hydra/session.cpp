@@ -320,9 +320,9 @@ namespace hydra
     bool session::seen(message pMsg)
     {
         bool found = false;
-        for (const message msg : mSeen)
+        for (const auto& msg : mSeen)
         {
-            if (pMsg.derived() == msg)
+            if (pMsg.derived() == msg.derived())
             {
                 found = true;
                 break;

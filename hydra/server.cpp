@@ -21,7 +21,7 @@ namespace hydra
         {
             message msg = connection::read();
 
-            if (mSess->seen(msg.derived()))
+            if (mSess->seen(msg))
             {
                 logs::debug << "Ignoring seen message: " << msg.serialize() << logs::done;
                 continue;

@@ -163,6 +163,7 @@ namespace hydra
 
     bool message::operator==(const message& pMsg) const
     {
+        logs::debug << "Comparing raw messages with types " << typeid(*this).name() << ',' << typeid(pMsg).name() << logs::done;
         return (mCommand == pMsg.mCommand)
             && (mParams == pMsg.mParams);
     }
@@ -184,7 +185,7 @@ namespace hydra
         return oss.str();
     }
 
-    message message::derived()
+    message message::derived() const
     {
         if (mDerived.get())
         {
