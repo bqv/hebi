@@ -162,7 +162,59 @@ namespace hydra
 
     void session::handleElection(message pMsg)
     {
-        (void)pMsg;
+        if (pMsg.is(message::command::PLEDGE))
+        {
+            pledge pledgeMsg = static_cast<pledge>(pMsg.derived());
+            if (pledgeMsg.term == mTerm)
+            {
+                mPledges[pledgeMsg.nom].insert(pledgeMsg.id);
+                broadcast(pledgeMsg);
+
+                for (auto i : mPledges)
+                {
+                    if (i.second.size() >= quorum())
+                    {
+                        call callMsg(mTerm);
+                        broadcast(callMsg);
+                        mPledges.clear();
+                        elect electMsg(mTerm, mNominee, mNodeId);
+                        broadcast(electMsg);
+                        mVotes[mNominee].insert(mNodeId);
+                        break;
+                    }
+                }
+            }
+        }
+        else if (pMsg.is(message::command::CALL))
+        {
+            call callMsg = static_cast<call>(pMsg.derived());
+            if (callMsg.term == mTerm)
+            {
+                mPledges.clear();
+                elect electMsg(mTerm, mNominee, mNodeId);
+                broadcast(electMsg);
+                mVotes[mNominee].insert(mNodeId);
+            }
+        }
+        else if (pMsg.is(message::command::ELECT))
+        {
+            elect electMsg = static_cast<elect>(pMsg.derived());
+            if (electMsg.term == mTerm)
+            {
+                mVotes[electMsg.nom].insert(electMsg.id);
+                broadcast(electMsg);
+
+                for (auto i : mVotes)
+                {
+                    if (i.second.size() >= quorum())
+                    {
+                        mLeader = i.first;
+                        setState(state::TERMTIME);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     void session::handleTermtime(message pMsg)
@@ -175,6 +227,20 @@ namespace hydra
             meet meetMsg(mInductee, mNodeId);
             broadcast(meetMsg);
         }
+        if (pMsg.is(message::command::NOMINATE))
+        {
+            nominate nominateMsg = static_cast<nominate>(pMsg.derived());
+            if (nominateMsg.term > mTerm)
+            {
+                // TODO: Start election timer
+                setState(state::ELECTION);
+                mTerm = nominateMsg.term;
+                mNominee = nominateMsg.id;
+                mPledges[mNominee].insert(mNodeId);
+                pledge pledgeMsg(nominateMsg.term, nominateMsg.id, mNodeId);
+                broadcast(pledgeMsg);
+            }
+        }
         else if (mLeader == mNodeId)
         {
             if (pMsg.is(message::command::PING))
@@ -182,11 +248,15 @@ namespace hydra
                 ping pingMsg = static_cast<ping>(pMsg.derived());
                 if (pingMsg.term > mTerm)
                 {
+                    logs::debug << LOC() "Stepping down in deference to " << pingMsg.id << logs::done;
                     setLeader(pingMsg.id);
                 }
                 else if (pingMsg.term == mTerm)
                 {
+                    // TODO: Start election timer
                     setState(state::ELECTION);
+                    mNominee = mNodeId;
+                    mPledges[mNominee].insert(mNodeId);
                     nominate nominateMsg(++mTerm, mNodeId);
                     broadcast(nominateMsg);
                 }

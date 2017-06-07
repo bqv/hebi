@@ -61,9 +61,12 @@ namespace hydra
         std::uint32_t mLeader;
         int mTerm;
         std::uint32_t mInductee;
+        std::uint32_t mNominee;
         unsigned mPingVal;
         std::string mPingVal_str;
         std::set<std::uint32_t> mPongs;
+        std::unordered_map<std::uint32_t, std::set<std::uint32_t>> mPledges;
+        std::unordered_map<std::uint32_t, std::set<std::uint32_t>> mVotes;
         std::mutex mLeaderLock;
         std::condition_variable mIsNotLeader;
 

@@ -186,7 +186,14 @@ namespace hydra
 
     message message::derived()
     {
-        return *mDerived;
+        if (mDerived.get())
+        {
+            return *mDerived;
+        }
+        else
+        {
+            return *this;
+        }
     }
 
     message::~message()

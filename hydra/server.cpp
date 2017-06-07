@@ -81,7 +81,22 @@ namespace hydra
                     
                     msg = connection::read();
                 }
-                mSess->handle(msg);
+                if (msg.is(message::command::DROP))
+                {
+                    drop dropMsg = static_cast<drop>(msg.derived());
+                    if (dropMsg.id == mClntId)
+                    {
+                        inducted = false;
+                    }
+                    else
+                    {
+                        mSess->handle(msg);
+                    }
+                }
+                else
+                {
+                    mSess->handle(msg);
+                }
             }
         }
         mRunning = false;
